@@ -17,6 +17,7 @@
 body {
   font-family: var(--font-main);
   background-color: #141414;
+  color: #f9f9f9;
   margin: 0;
   padding: 32px;
   min-width: 320px;

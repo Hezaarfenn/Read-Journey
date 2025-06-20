@@ -9,7 +9,7 @@ const NotFoundPage = () => {
         alt="Lost Book"
         className="w-60 mb-8 animate-pulse"
       />
-      <h1 className="text-5xl font-bold text-indigo-600 mb-4">404</h1>
+      <h1 className="text-5xl font-bold text-indigo-600 mb-4">404 Not Found</h1>
       <p className="text-xl text-gray-700 mb-2">
         Page not found... It's like a missing page fell out of a book 📖
       </p>
