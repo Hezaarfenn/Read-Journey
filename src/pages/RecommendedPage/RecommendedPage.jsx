@@ -1,5 +1,11 @@
+import Header from "../../components/Header/Header";
+
 const RecommendedPage = () => {
-  return <div>RecommendedPage</div>;
+  return (
+    <div>
+      <Header />
+    </div>
+  );
 };
 
 export default RecommendedPage;
