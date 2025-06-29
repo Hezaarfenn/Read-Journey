@@ -12,8 +12,9 @@ const authSlice = createSlice({
   reducers: {
     logoutUser: (state) => {
       state.user = null;
-      state.isLoggedIn = false;
+      state.isLoading = false;
       state.error = null;
+      state.isLoggedIn = false;
     },
   },
   extraReducers: (builder) => {
@@ -46,13 +47,6 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      })
-
-      // Logout Reducers
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-        state.isLoggedIn = false;
-        state.error = null;
       });
   },
 });
