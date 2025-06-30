@@ -4,9 +4,7 @@ import Loader from "../components/Loader/Loader";
 
 const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
 const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
-const RecommendedPage = lazy(
-  () => import("../pages/RecommendedPage/RecommendedPage"),
-);
+const HomePage = lazy(() => import("../pages/HomePage/HomePage"));
 const LibraryPage = lazy(() => import("../pages/LibraryPage/LibraryPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage/NotFoundPage"));
 
@@ -17,7 +15,7 @@ export const AppRoutes = () => {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/recommended" element={<RecommendedPage />} />
+        <Route path="/recommended" element={<HomePage />} />
         <Route path="/library" element={<LibraryPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

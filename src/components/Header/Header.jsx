@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../redux/auth/authSlice";
 import { NavLink } from "react-router-dom";
@@ -11,6 +11,8 @@ const Header = () => {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const user = useSelector((state) => state.auth.user);
 
   const handleLogout = async () => {
     try {
@@ -26,7 +28,7 @@ const Header = () => {
 
   return (
     <>
-      <section className="flex justify-between p-6 border border-transparent bg-[#1F1F1F] w-[1216px] h-[74px] rounded-[15px]">
+      <header className="flex justify-between p-6 border border-transparent bg-[#1F1F1F] w-full h-[74px] rounded-[15px]">
         <div className="flex items-center gap-1">
           <svg width="42" height="17" className="">
             <use href="/sprite.svg#icon-Frame-8" />
@@ -60,10 +62,12 @@ const Header = () => {
 
         <div className="flex items-center gap-4">
           <div className="w-[40px] h-[40px] text-[#F9F9F9] border border-[#F9F9F9]/20 rounded-full bg-[#262626] text-[16px] flex items-center justify-center ">
-            I
+            {user?.name
+              ? user.displayName.charAt(0).toUpperCase()
+              : user?.email.charAt(0).toUpperCase()}
           </div>
           <div className="text-[16px] font-bold text-[#F9F9F9]">
-            Ilona Ratushniak
+            {user?.displayName || user?.email}
           </div>
           <button
             onClick={() => setIsLogoutOpen(true)}
@@ -72,7 +76,7 @@ const Header = () => {
             Log out
           </button>
         </div>
-      </section>
+      </header>
 
       {isLogoutOpen && (
         <BaseModal
