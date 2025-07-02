@@ -87,7 +87,7 @@ const MyLibrary = () => {
       {/* Main Content */}
       <div className="flex flex-1 flex-col gap-2 border rounded-[30px] border-transparent bg-[#1F1F1F] p-10">
         <div className="flex justify-between items-center mb-5">
-          <h1>My library</h1>
+          <h1 className="text-[28px]/[32px] font-bold">My library</h1>
           <select className="w-[153px] h-[46px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]">
             <option value="all">Unread</option>
             <option value="all">In progress</option>
@@ -95,6 +95,60 @@ const MyLibrary = () => {
             <option value="all">All books</option>
           </select>
         </div>
+
+        <div className="w-full flex flex-col justify-center items-center mt-[147px]">
+          <div className="w-[274px] gap-5 flex flex-col items-center">
+            <img src="/img/book-1.png" alt="Book" className="w-40 h-40" />
+            <p className="text-[#F9F9F9] text-[14px]/[18px] font-medium text-center">
+              To start training, add{" "}
+              <span className="text-[#686868]">some of your books</span> or from
+              the recommended ones
+            </p>
+          </div>
+        </div>
+
+        {/* <ul className="flex flex-wrap gap-5">
+          <li className="flex flex-col gap-3 items-start">
+            <img
+              src="/img/image 2.png"
+              alt="Book 1"
+              className="w-[137px] h-[208px] rounded-lg"
+            />
+            <div className="w-[137px] flex justify-between items-center">
+              <div className="flex flex-col gap-0.5">
+                <p className="text-[#E3E3E3] font-bold text-[14px]">
+                  I See You Ar...
+                </p>
+                <p className="text-[#686868] font-medium text-[10px]">
+                  Hilarion Pavlyuk
+                </p>
+              </div>
+              <svg width="28" height="28">
+                <use href="/sprite.svg#icon-basket" />
+              </svg>
+            </div>
+          </li>
+          <li className="flex flex-col gap-3 items-start">
+            <img
+              src="/img/image 2.png"
+              alt="Book 1"
+              className="w-[137px] h-[208px] rounded-lg"
+            />
+            <div className="w-[137px] flex justify-between items-center">
+              <div className="flex flex-col gap-0.5">
+                <p className="text-[#E3E3E3] font-bold text-[14px]">
+                  I See You Ar...
+                </p>
+                <p className="text-[#686868] font-medium text-[10px]">
+                  Hilarion Pavlyuk
+                </p>
+              </div>
+              <svg width="28" height="28">
+                <use href="/sprite.svg#icon-basket" />
+              </svg>
+            </div>
+          </li>
+        </ul> */}
       </div>
     </section>
   );

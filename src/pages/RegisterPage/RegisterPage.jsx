@@ -19,6 +19,14 @@ const RegisterPage = () => {
     }
   }, [isLoggedIn, navigate]);
 
+  const error = useSelector((state) => state.auth.error);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message || "An error occurred");
+    }
+  }, [error]);
+
   const initialValues = {
     name: "",
     email: "",

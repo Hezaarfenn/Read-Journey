@@ -7,7 +7,7 @@ const BaseModal = ({ isOpen, onRequestClose, children }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="relative w-full max-w-[500px] bg-[#686868]/20 rounded-[12px] px-10 pt-10 pb-6 shadow-lg text-white outline-none"
+      className="relative w-full max-w-[500px] bg-[#1F1F1F] border-[#686868]/20 rounded-[12px] px-10 pt-10 pb-6 shadow-lg text-white outline-none"
       overlayClassName="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
     >
       {/* X Close Button */}

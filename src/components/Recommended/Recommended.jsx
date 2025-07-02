@@ -1,4 +1,31 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBooks } from "../../redux/books/booksSlice";
+import { toast } from "react-toastify";
+import Loader from "../Loader/Loader";
+
 const Recommended = () => {
+  const dispatch = useDispatch();
+  const {
+    items: books = [],
+    isLoading,
+    error,
+  } = useSelector((state) => state.books || {});
+
+  useEffect(() => {
+    dispatch(fetchBooks());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
     <section className="flex gap-4 mt-2">
       {/* Left Sidebar */}
@@ -77,7 +104,55 @@ const Recommended = () => {
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col gap-2 border rounded-[30px] border-transparent bg-[#1F1F1F] p-10">
-        <h2>Recomended</h2>
+        <div className="flex justify-between items-center">
+          <h1 className="text-[28px]/[32px] font-bold">Recomended</h1>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 flex border rounded-full mt-5 justify-center items-center">
+              <svg
+                width="20"
+                height="20"
+                className="cursor-pointer items-center justify-center flex text-center"
+              >
+                <use href="/chevron-left.svg" />
+              </svg>
+            </div>
+            <div className="w-7 h-7 flex border rounded-full mt-5 justify-center items-center">
+              <svg
+                width="20"
+                height="20"
+                className="cursor-pointer items-center justify-center flex text-center"
+              >
+                <use href="/chevron-right.svg" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <ul className="flex flex-wrap gap-5 mt-7">
+          {books.length > 0 ? (
+            books.map((book) => (
+              <li key={book._id} className="flex flex-col gap-3 items-start">
+                <img
+                  src={book.imageUrl}
+                  alt={book.title}
+                  className="w-[137px] h-[208px] rounded-lg"
+                />
+                <div className="w-[137px] flex justify-between items-center">
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-[#E3E3E3] font-bold text-[14px]">
+                      {book.title}
+                    </p>
+                    <p className="text-[#686868] font-medium text-[10px]">
+                      {book.author}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            ))
+          ) : (
+            <p className="text-[#686868] text-sm">No books found.</p>
+          )}
+        </ul>
       </div>
     </section>
   );

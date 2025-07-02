@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logoutUser } from "../../redux/auth/authSlice";
+import { logoutUser } from "../../redux/auth/authOps";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import BaseModal from "../BaseModal/BaseModal";
@@ -13,6 +13,14 @@ const Header = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state) => state.auth.user);
+
+  const error = useSelector((state) => state.auth.error);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message || "An error occurred");
+    }
+  }, [error]);
 
   const handleLogout = async () => {
     try {
@@ -63,11 +71,13 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <div className="w-[40px] h-[40px] text-[#F9F9F9] border border-[#F9F9F9]/20 rounded-full bg-[#262626] text-[16px] flex items-center justify-center ">
             {user?.name
-              ? user.displayName.charAt(0).toUpperCase()
-              : user?.email.charAt(0).toUpperCase()}
+              ? user.name.charAt(0).toUpperCase()
+              : user?.email
+                ? user.email.charAt(0).toUpperCase()
+                : "?"}
           </div>
           <div className="text-[16px] font-bold text-[#F9F9F9]">
-            {user?.displayName || user?.email}
+            {user?.name || user?.email}
           </div>
           <button
             onClick={() => setIsLogoutOpen(true)}
