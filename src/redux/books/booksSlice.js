@@ -16,7 +16,6 @@ export const fetchBooks = createAsyncThunk(
   "books/fetchAll",
   async (_, thunkAPI) => {
     try {
-      // Token'ı global state'den alıyoruz
       const state = thunkAPI.getState();
       const token = state.auth.token;
 
@@ -41,6 +40,18 @@ const booksSlice = createSlice({
     items: [],
     isLoading: false,
     error: null,
+    filter: {
+      title: "",
+      author: "",
+    },
+  },
+  reducers: {
+    setTitleFilter: (state, action) => {
+      state.filter.title = action.payload;
+    },
+    setAuthorFilter: (state, action) => {
+      state.filter.author = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -59,4 +70,5 @@ const booksSlice = createSlice({
   },
 });
 
+export const { setTitleFilter, setAuthorFilter } = booksSlice.actions;
 export default booksSlice.reducer;

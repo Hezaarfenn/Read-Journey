@@ -1,8 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBooks } from "../../redux/books/booksSlice";
+import {
+  fetchBooks,
+  setAuthorFilter,
+  setTitleFilter,
+} from "../../redux/books/booksSlice";
 import { toast } from "react-toastify";
 import Loader from "../Loader/Loader";
+import BaseModal from "../BaseModal/BaseModal";
 
 const Recommended = () => {
   const dispatch = useDispatch();
@@ -10,7 +15,32 @@ const Recommended = () => {
     items: books = [],
     isLoading,
     error,
+    filter,
   } = useSelector((state) => state.books || {});
+
+  const [titleInput, setTitleInput] = useState(filter.title || "");
+  const [authorInput, setAuthorInput] = useState(filter.author || "");
+
+  const filteredBooks = books.filter((book) => {
+    const titleMatch = book.title
+      .toLowerCase()
+      .includes(filter.title.toLowerCase());
+    const authorMatch = book.author
+      .toLowerCase()
+      .includes(filter.author.toLowerCase());
+    return titleMatch && authorMatch;
+  });
+
+  const [selectedBook, setSelectedBook] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 5;
+
+  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+
+  const indexOfLastBook = currentPage * booksPerPage;
+  const indexOfFirstBook = indexOfLastBook - booksPerPage;
+  const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
 
   useEffect(() => {
     dispatch(fetchBooks());
@@ -22,6 +52,16 @@ const Recommended = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter.title, filter.author]);
+
+  const handleFilterSubmit = (e) => {
+    e.preventDefault();
+    dispatch(setTitleFilter(titleInput));
+    dispatch(setAuthorFilter(authorInput));
+  };
+
   if (isLoading) {
     return <Loader />;
   }
@@ -31,7 +71,7 @@ const Recommended = () => {
       {/* Left Sidebar */}
       <div className="flex flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
         {/* Filter */}
-        <div>
+        <form onSubmit={handleFilterSubmit}>
           <p className="ml-4 text-[14px] font-medium text-[#F9F9F9]">
             Filters:
           </p>
@@ -39,18 +79,25 @@ const Recommended = () => {
             <input
               type="text"
               placeholder="Book title:"
-              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]"
+              value={titleInput}
+              onChange={(e) => setTitleInput(e.target.value)}
+              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868] hover:border-[#262626] focus:outline-none"
             />
             <input
               type="text"
               placeholder="The author:"
-              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]"
+              value={authorInput}
+              onChange={(e) => setAuthorInput(e.target.value)}
+              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868] hover:border-[#262626] focus:outline-none"
             />
           </div>
-          <button className="w-[122px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer">
+          <button
+            type="submit"
+            className="w-[122px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer hover:bg-[#F9F9F9] hover:text-[#1F1F1F]"
+          >
             To apply
           </button>
-        </div>
+        </form>
 
         {/* Workout */}
         <div className="w-[313px] border border-transparent rounded-xl bg-[#262626] p-5 mt-5">
@@ -107,7 +154,17 @@ const Recommended = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-[28px]/[32px] font-bold">Recomended</h1>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 flex border rounded-full mt-5 justify-center items-center">
+            {/* Left Arrow */}
+            <div
+              className={`w-7 h-7 flex border rounded-full mt-5 justify-center items-center ${
+                currentPage === 1
+                  ? "opacity-30 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+              onClick={() => {
+                if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+              }}
+            >
               <svg
                 width="20"
                 height="20"
@@ -116,7 +173,17 @@ const Recommended = () => {
                 <use href="/chevron-left.svg" />
               </svg>
             </div>
-            <div className="w-7 h-7 flex border rounded-full mt-5 justify-center items-center">
+            <div
+              className={`w-7 h-7 flex border rounded-full mt-5 justify-center items-center ${
+                currentPage === totalPages
+                  ? "opacity-30 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+              onClick={() => {
+                if (currentPage < totalPages)
+                  setCurrentPage((prev) => prev + 1);
+              }}
+            >
               <svg
                 width="20"
                 height="20"
@@ -129,13 +196,17 @@ const Recommended = () => {
         </div>
 
         <ul className="flex flex-wrap gap-5 mt-7">
-          {books.length > 0 ? (
-            books.map((book) => (
-              <li key={book._id} className="flex flex-col gap-3 items-start">
+          {currentBooks.length > 0 ? (
+            currentBooks.map((book) => (
+              <li
+                key={book._id}
+                onClick={() => setSelectedBook(book)}
+                className="flex flex-col gap-3 items-start cursor-pointer"
+              >
                 <img
                   src={book.imageUrl}
                   alt={book.title}
-                  className="w-[137px] h-[208px] rounded-lg"
+                  className="w-[137px] h-[208px] rounded-lg transition-transform duration-300 hover:scale-105"
                 />
                 <div className="w-[137px] flex justify-between items-center">
                   <div className="flex flex-col gap-0.5">
@@ -154,6 +225,25 @@ const Recommended = () => {
           )}
         </ul>
       </div>
+      {selectedBook && (
+        <BaseModal isOpen={true} onRequestClose={() => setSelectedBook(null)}>
+          <div className="flex flex-col items-center text-center">
+            <img
+              src={selectedBook.imageUrl}
+              alt={selectedBook.title}
+              className="w-[160px] h-[240px] rounded-md mb-4"
+            />
+            <h2 className="text-xl font-bold">{selectedBook.title}</h2>
+            <p className="text-sm text-[#686868] mb-1">{selectedBook.author}</p>
+            <p className="text-[10px]/[12px] font-medium text-[#F9F9F9]">
+              {selectedBook.totalPages} pages
+            </p>
+            <button className="w-[162px] h-[46px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-8 cursor-pointer hover:bg-[#F9F9F9] hover:text-[#1F1F1F]">
+              Add to library
+            </button>
+          </div>
+        </BaseModal>
+      )}
     </section>
   );
 };
