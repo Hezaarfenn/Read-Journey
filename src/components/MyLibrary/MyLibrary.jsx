@@ -1,4 +1,10 @@
+import { useDispatch, useSelector } from "react-redux";
+import { removeBook } from "../../redux/books/booksOps";
+
 const MyLibrary = () => {
+  const booksInLibrary = useSelector((state) => state.books.ownBooks);
+  const dispatch = useDispatch();
+
   return (
     <section className="flex gap-4 mt-2">
       {/* Left Sidebar */}
@@ -96,59 +102,48 @@ const MyLibrary = () => {
           </select>
         </div>
 
-        <div className="w-full flex flex-col justify-center items-center mt-[147px]">
-          <div className="w-[274px] gap-5 flex flex-col items-center">
-            <img src="/img/book-1.png" alt="Book" className="w-40 h-40" />
-            <p className="text-[#F9F9F9] text-[14px]/[18px] font-medium text-center">
-              To start training, add{" "}
-              <span className="text-[#686868]">some of your books</span> or from
-              the recommended ones
-            </p>
+        {booksInLibrary.length === 0 ? (
+          <div className="w-full flex flex-col justify-center items-center mt-[147px]">
+            <div className="w-[274px] gap-5 flex flex-col items-center">
+              <img src="/img/book-1.png" alt="Book" className="w-40 h-40" />
+              <p className="text-[#F9F9F9] text-[14px]/[18px] font-medium text-center">
+                To start training, add{" "}
+                <span className="text-[#686868]">some of your books</span> or
+                from the recommended ones
+              </p>
+            </div>
           </div>
-        </div>
-
-        {/* <ul className="flex flex-wrap gap-5">
-          <li className="flex flex-col gap-3 items-start">
-            <img
-              src="/img/image 2.png"
-              alt="Book 1"
-              className="w-[137px] h-[208px] rounded-lg"
-            />
-            <div className="w-[137px] flex justify-between items-center">
-              <div className="flex flex-col gap-0.5">
-                <p className="text-[#E3E3E3] font-bold text-[14px]">
-                  I See You Ar...
-                </p>
-                <p className="text-[#686868] font-medium text-[10px]">
-                  Hilarion Pavlyuk
-                </p>
-              </div>
-              <svg width="28" height="28">
-                <use href="/sprite.svg#icon-basket" />
-              </svg>
-            </div>
-          </li>
-          <li className="flex flex-col gap-3 items-start">
-            <img
-              src="/img/image 2.png"
-              alt="Book 1"
-              className="w-[137px] h-[208px] rounded-lg"
-            />
-            <div className="w-[137px] flex justify-between items-center">
-              <div className="flex flex-col gap-0.5">
-                <p className="text-[#E3E3E3] font-bold text-[14px]">
-                  I See You Ar...
-                </p>
-                <p className="text-[#686868] font-medium text-[10px]">
-                  Hilarion Pavlyuk
-                </p>
-              </div>
-              <svg width="28" height="28">
-                <use href="/sprite.svg#icon-basket" />
-              </svg>
-            </div>
-          </li>
-        </ul> */}
+        ) : (
+          <ul className="flex flex-wrap gap-5">
+            {booksInLibrary.map((book) => (
+              <li key={book._id} className="flex flex-col gap-3 items-start">
+                <img
+                  src={book.imageUrl}
+                  alt={book.title}
+                  className="w-[137px] h-[208px] object-cover mx-auto rounded-lg"
+                />
+                <div className="w-[137px] flex justify-between items-center">
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-[#E3E3E3] font-bold text-[14px] truncate max-w-[89px] text-center">
+                      {book.title}
+                    </p>
+                    <p className="text-[#686868] font-medium text-[10px]">
+                      {book.author}
+                    </p>
+                  </div>
+                  <svg
+                    width="28"
+                    height="28"
+                    onClick={() => dispatch(removeBook(book._id))}
+                    className="cursor-pointer hover:scale-110 transition-transform"
+                  >
+                    <use href="/sprite.svg#icon-basket" />
+                  </svg>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchBooks,
-  setAuthorFilter,
-  setTitleFilter,
-} from "../../redux/books/booksSlice";
+  addRecommendedBook,
+  fetchRecommendedBooks,
+} from "../../redux/books/booksOps";
+import { setAuthorFilter, setTitleFilter } from "../../redux/books/booksSlice";
 import { toast } from "react-toastify";
 import Loader from "../Loader/Loader";
 import BaseModal from "../BaseModal/BaseModal";
@@ -12,39 +12,29 @@ import BaseModal from "../BaseModal/BaseModal";
 const Recommended = () => {
   const dispatch = useDispatch();
   const {
-    items: books = [],
+    recommended: books = [],
     isLoading,
     error,
-    filter,
+    filter = { title: "", author: "" },
+    pagination,
   } = useSelector((state) => state.books || {});
 
   const [titleInput, setTitleInput] = useState(filter.title || "");
   const [authorInput, setAuthorInput] = useState(filter.author || "");
-
-  const filteredBooks = books.filter((book) => {
-    const titleMatch = book.title
-      .toLowerCase()
-      .includes(filter.title.toLowerCase());
-    const authorMatch = book.author
-      .toLowerCase()
-      .includes(filter.author.toLowerCase());
-    return titleMatch && authorMatch;
-  });
-
   const [selectedBook, setSelectedBook] = useState(null);
-
+  const [addLibraryModalOpen, setAddLibraryModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const booksPerPage = 5;
-
-  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
-
-  const indexOfLastBook = currentPage * booksPerPage;
-  const indexOfFirstBook = indexOfLastBook - booksPerPage;
-  const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
 
   useEffect(() => {
-    dispatch(fetchBooks());
-  }, [dispatch]);
+    dispatch(
+      fetchRecommendedBooks({
+        page: currentPage,
+        limit: 10,
+        title: filter.title,
+        author: filter.author,
+      }),
+    );
+  }, [dispatch, currentPage, filter.title, filter.author]);
 
   useEffect(() => {
     if (error) {
@@ -52,14 +42,17 @@ const Recommended = () => {
     }
   }, [error]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filter.title, filter.author]);
-
   const handleFilterSubmit = (e) => {
     e.preventDefault();
     dispatch(setTitleFilter(titleInput));
     dispatch(setAuthorFilter(authorInput));
+    setCurrentPage(1);
+  };
+
+  const handleAddBookToLibrary = () => {
+    dispatch(addRecommendedBook(selectedBook._id));
+    setSelectedBook(null);
+    setAddLibraryModalOpen(true);
   };
 
   if (isLoading) {
@@ -155,7 +148,7 @@ const Recommended = () => {
           <h1 className="text-[28px]/[32px] font-bold">Recomended</h1>
           <div className="flex items-center gap-2">
             {/* Left Arrow */}
-            <div
+            <button
               className={`w-7 h-7 flex border rounded-full mt-5 justify-center items-center ${
                 currentPage === 1
                   ? "opacity-30 cursor-not-allowed"
@@ -172,15 +165,11 @@ const Recommended = () => {
               >
                 <use href="/chevron-left.svg" />
               </svg>
-            </div>
-            <div
-              className={`w-7 h-7 flex border rounded-full mt-5 justify-center items-center ${
-                currentPage === totalPages
-                  ? "opacity-30 cursor-not-allowed"
-                  : "cursor-pointer"
-              }`}
+            </button>
+            <button
+              className={`w-7 h-7 flex border rounded-full mt-5 justify-center items-center ${currentPage === pagination.totalPages ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
               onClick={() => {
-                if (currentPage < totalPages)
+                if (currentPage < pagination.totalPages)
                   setCurrentPage((prev) => prev + 1);
               }}
             >
@@ -191,13 +180,17 @@ const Recommended = () => {
               >
                 <use href="/chevron-right.svg" />
               </svg>
-            </div>
+            </button>
           </div>
         </div>
 
+        <div className="text-sm text-[#686868] mt-2">
+          Page {pagination.page} of {pagination.totalPages}
+        </div>
+
         <ul className="flex flex-wrap gap-5 mt-7">
-          {currentBooks.length > 0 ? (
-            currentBooks.map((book) => (
+          {books.length > 0 ? (
+            books.map((book) => (
               <li
                 key={book._id}
                 onClick={() => setSelectedBook(book)}
@@ -225,6 +218,8 @@ const Recommended = () => {
           )}
         </ul>
       </div>
+
+      {/* Modal */}
       {selectedBook && (
         <BaseModal isOpen={true} onRequestClose={() => setSelectedBook(null)}>
           <div className="flex flex-col items-center text-center">
@@ -238,9 +233,28 @@ const Recommended = () => {
             <p className="text-[10px]/[12px] font-medium text-[#F9F9F9]">
               {selectedBook.totalPages} pages
             </p>
-            <button className="w-[162px] h-[46px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-8 cursor-pointer hover:bg-[#F9F9F9] hover:text-[#1F1F1F]">
+            <button
+              onClick={handleAddBookToLibrary}
+              className="w-[162px] h-[46px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-8 cursor-pointer hover:bg-[#F9F9F9] hover:text-[#1F1F1F]"
+            >
               Add to library
             </button>
+          </div>
+        </BaseModal>
+      )}
+      {addLibraryModalOpen && (
+        <BaseModal
+          isOpen={true}
+          onRequestClose={() => setAddLibraryModalOpen(false)}
+        >
+          <div className="h-[320px] flex flex-col items-center text-center py-12">
+            <img src="/img/okey.png" alt="" className="w-20 h-20 mb-[32px]" />
+            <h2 className="text-[20px] font-bold text-[#F9F9F9]">Good job</h2>
+            <p className="w-[242px] text-sm font-medium text-[#686868] mt-3.5">
+              Your book is now in{" "}
+              <span className="text-[#F9F9F9]">the library!</span> The joy knows
+              no bounds and now you can start your training
+            </p>
           </div>
         </BaseModal>
       )}

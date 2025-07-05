@@ -1,50 +1,36 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  fetchRecommendedBooks,
+  fetchBookDetails,
+  addRecommendedBook,
+  fetchOwnBooks,
+  addBook,
+  removeBook,
+  startReading,
+  finishReading,
+  deleteReading,
+} from "./booksOps";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.baseURL = BASE_URL;
-
-const setAuthHeader = (token) => {
-  if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    delete axios.defaults.headers.common["Authorization"];
-  }
-};
-
-export const fetchBooks = createAsyncThunk(
-  "books/fetchAll",
-  async (_, thunkAPI) => {
-    try {
-      const state = thunkAPI.getState();
-      const token = state.auth.token;
-
-      if (!token) {
-        return thunkAPI.rejectWithValue("No token found");
-      }
-
-      setAuthHeader(token);
-
-      const response = await axios.get("/books/recommend");
-
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || error.message);
-    }
+const initialState = {
+  recommended: [],
+  myLibrary: [],
+  ownBooks: [],
+  bookDetails: null,
+  isLoading: false,
+  error: null,
+  filter: {
+    title: "",
+    author: "",
   },
-);
+  pagination: {
+    page: 1,
+    totalPages: 1,
+  },
+};
 
 const booksSlice = createSlice({
   name: "books",
-  initialState: {
-    items: [],
-    isLoading: false,
-    error: null,
-    filter: {
-      title: "",
-      author: "",
-    },
-  },
+  initialState,
   reducers: {
     setTitleFilter: (state, action) => {
       state.filter.title = action.payload;
@@ -52,23 +38,55 @@ const booksSlice = createSlice({
     setAuthorFilter: (state, action) => {
       state.filter.author = action.payload;
     },
+    resetBookDetails: (state) => {
+      state.bookDetails = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchBooks.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.items = action.payload.results;
-      })
-      .addCase(fetchBooks.pending, (state) => {
+      .addCase(fetchRecommendedBooks.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchBooks.rejected, (state, action) => {
+      .addCase(fetchRecommendedBooks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.recommended = action.payload.results;
+        state.pagination.page = action.payload.page;
+        state.pagination.totalPages = action.payload.totalPages;
+      })
+      .addCase(fetchRecommendedBooks.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchBookDetails.fulfilled, (state, action) => {
+        state.bookDetails = action.payload;
+      })
+      .addCase(addRecommendedBook.fulfilled, (state, action) => {
+        state.ownBooks.push(action.payload);
+      })
+      .addCase(fetchOwnBooks.fulfilled, (state, action) => {
+        state.ownBooks = action.payload.results;
+      })
+      .addCase(addBook.fulfilled, (state, action) => {
+        state.ownBooks.push(action.payload);
+      })
+      .addCase(removeBook.fulfilled, (state, action) => {
+        state.ownBooks = state.ownBooks.filter(
+          (book) => book._id !== action.payload,
+        );
+      })
+      .addCase(startReading.fulfilled, (state, action) => {
+        state.bookDetails = action.payload;
+      })
+      .addCase(finishReading.fulfilled, (state, action) => {
+        state.bookDetails = action.payload;
+      })
+      .addCase(deleteReading.fulfilled, (state) => {
+        state.bookDetails = null;
       });
   },
 });
 
-export const { setTitleFilter, setAuthorFilter } = booksSlice.actions;
+export const { resetBookDetails, setAuthorFilter, setTitleFilter } =
+  booksSlice.actions;
 export default booksSlice.reducer;

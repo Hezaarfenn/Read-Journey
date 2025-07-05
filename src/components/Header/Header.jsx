@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../redux/auth/authOps";
 import { NavLink } from "react-router-dom";
+import { persistor } from "../../redux/store";
 import { toast } from "react-toastify";
 import BaseModal from "../BaseModal/BaseModal";
 import Logout from "../Logout/Logout";
@@ -25,6 +26,8 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser());
+      await persistor.purge();
+      console.log("Storage temizlendi", persistor);
       toast.success("Logout successful!");
       navigate("/login");
     } catch (error) {
