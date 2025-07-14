@@ -199,8 +199,12 @@ const RegisterPage = () => {
         </Formik>
       </div>
 
-      <div className="flex-1/2 px-16 border rounded-[30px] border-transparent bg-[#1F1F1F] flex flex-col">
-        <img src="/img/iPhone 15 Black.png" alt="iPhone15" className="mt-20" />
+      <div className="flex-1/2 px-16 border rounded-[30px] border-transparent bg-[#1F1F1F] hidden md:flex flex-col items-center">
+        <img
+          src="/img/iPhone 15 Black.png"
+          alt="iPhone15"
+          className="mt-20 w-[400px] max-w-none"
+        />
       </div>
     </section>
   );
