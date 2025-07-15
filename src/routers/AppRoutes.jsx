@@ -6,6 +6,7 @@ const RegisterPage = lazy(() => import("../pages/RegisterPage/RegisterPage"));
 const LoginPage = lazy(() => import("../pages/LoginPage/LoginPage"));
 const HomePage = lazy(() => import("../pages/HomePage/HomePage"));
 const LibraryPage = lazy(() => import("../pages/LibraryPage/LibraryPage"));
+const ReadingPage = lazy(() => import("../pages/ReadingPage/ReadingPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage/NotFoundPage"));
 
 export const AppRoutes = () => {
@@ -17,6 +18,7 @@ export const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/recommended" element={<HomePage />} />
         <Route path="/library" element={<LibraryPage />} />
+        <Route path="/reading/:id" element={<ReadingPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>

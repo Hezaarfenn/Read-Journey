@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   removeBook,
   fetchRecommendedBooks,
   addBook,
 } from "../../redux/books/booksOps";
+import BaseModal from "../BaseModal/BaseModal";
 import { toast } from "react-toastify";
 
 const MyLibrary = () => {
@@ -16,6 +18,14 @@ const MyLibrary = () => {
   );
 
   const [selectedFilter, setSelectedFilter] = useState("all");
+
+  const [selectedBook, setSelectedBook] = useState(null);
+  const navigate = useNavigate();
+
+  const handleStartReading = (bookId) => {
+    setSelectedBook(null);
+    navigate(`/reading/${bookId}`);
+  };
 
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -180,6 +190,7 @@ const MyLibrary = () => {
                 <img
                   src={book.imageUrl}
                   alt={book.title}
+                  onClick={() => setSelectedBook(book)}
                   className="w-[137px] h-[208px] object-cover mx-auto rounded-lg"
                 />
                 <div className="w-[137px] flex justify-between items-center">
@@ -205,6 +216,29 @@ const MyLibrary = () => {
           </ul>
         )}
       </div>
+      {selectedBook && (
+        <BaseModal isOpen={true} onRequestClose={() => setSelectedBook(null)}>
+          <div className="flex flex-col items-center text-center">
+            <img
+              src={selectedBook.imageUrl}
+              alt={selectedBook.title}
+              className="w-[160px] h-[240px] rounded-md mb-4"
+            />
+            <h2 className="text-xl font-bold">{selectedBook.title}</h2>
+            <p className="text-sm text-[#686868] mb-1">{selectedBook.author}</p>
+            <p className="text-[10px]/[12px] font-medium text-[#F9F9F9]">
+              {selectedBook.totalPages} pages
+            </p>
+
+            <button
+              onClick={() => handleStartReading(selectedBook._id)}
+              className="mt-8 w-[162px] h-[46px] border rounded-[30px] cursor-pointer"
+            >
+              Start reading
+            </button>
+          </div>
+        </BaseModal>
+      )}
     </section>
   );
 };

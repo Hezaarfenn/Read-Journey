@@ -135,17 +135,17 @@ export const removeBook = createAsyncThunk(
 
 export const startReading = createAsyncThunk(
   "books/startReading",
-  ({ bookId, page }, thunkAPI) =>
-    withAuth(thunkAPI, () =>
-      axios
-        .post("/books/reading/start", { bookId, page })
-        .then((res) => res.data)
-        .catch((error) =>
-          thunkAPI.rejectWithValue(
-            error.response?.data?.message || error.message,
-          ),
-        ),
-    ),
+  async ({ bookId, page }, thunkAPI) => {
+    try {
+      const response = await axios.post("/books/reading/start", {
+        bookId,
+        page,
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
 );
 
 export const finishReading = createAsyncThunk(
