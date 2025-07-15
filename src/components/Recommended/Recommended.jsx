@@ -42,6 +42,10 @@ const Recommended = () => {
     }
   }, [error]);
 
+  const isAlreadyInLibrary = useSelector((state) =>
+    state.books.ownBooks.some((b) => b.title === selectedBook?.title),
+  );
+
   const handleFilterSubmit = (e) => {
     e.preventDefault();
     dispatch(setTitleFilter(titleInput));
@@ -235,9 +239,12 @@ const Recommended = () => {
             </p>
             <button
               onClick={handleAddBookToLibrary}
-              className="w-[162px] h-[46px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-8 cursor-pointer hover:bg-[#F9F9F9] hover:text-[#1F1F1F]"
+              disabled={isAlreadyInLibrary}
+              className={`mt-8 w-[162px] h-[46px] border rounded-[30px] ${
+                isAlreadyInLibrary ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Add to library
+              {isAlreadyInLibrary ? "Already added" : "Add to library"}
             </button>
           </div>
         </BaseModal>

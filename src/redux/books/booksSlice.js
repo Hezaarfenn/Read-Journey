@@ -62,7 +62,11 @@ const booksSlice = createSlice({
         state.bookDetails = action.payload;
       })
       .addCase(addRecommendedBook.fulfilled, (state, action) => {
-        state.ownBooks.push(action.payload);
+        if (
+          !state.ownBooks.some((book) => book.title === action.payload.title)
+        ) {
+          state.ownBooks.push(action.payload);
+        }
       })
       .addCase(fetchOwnBooks.fulfilled, (state, action) => {
         state.ownBooks = action.payload.results;

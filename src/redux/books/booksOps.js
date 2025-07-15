@@ -21,7 +21,6 @@ const withAuth = async (thunkAPI, fn) => {
   return fn();
 };
 
-// Önerilen kitapları getir (GET /books/recommend)
 export const fetchRecommendedBooks = createAsyncThunk(
   "books/fetchRecommended",
   ({ page = 1, limit = 10, title = "", author = "" }, thunkAPI) =>
@@ -44,13 +43,10 @@ export const fetchRecommendedBooks = createAsyncThunk(
     }),
 );
 
-// fetchBookDetails fonksiyonunu try-catch ile güncelle
 export const fetchBookDetails = createAsyncThunk(
   "books/fetchBookDetails",
   async (bookId, thunkAPI) => {
-    console.log("🛠 fetchBookDetails çağrıldı, bookId:", bookId);
     if (!bookId) {
-      console.warn("⚠️ fetchBookDetails - bookId undefined!");
       return thunkAPI.rejectWithValue("bookId is undefined");
     }
     try {
@@ -59,17 +55,29 @@ export const fetchBookDetails = createAsyncThunk(
       const response = await axios.get(`/books/${bookId}`);
       return response.data;
     } catch (error) {
-      console.error("🔥 fetchBookDetails API error:", error.response || error);
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   },
 );
 
-// Önerilen kitaplardan kitap ekle (POST /books/add/{id})
 export const addRecommendedBook = createAsyncThunk(
   "books/addRecommendedBook",
-  (bookId, thunkAPI) =>
-    withAuth(thunkAPI, () =>
+  async (bookId, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const ownBooks = state.books.ownBooks;
+
+    const alreadyExists = ownBooks.some(
+      (book) =>
+        book.originalId === bookId ||
+        book.title ===
+          state.books.recommended.find((b) => b._id === bookId)?.title,
+    );
+
+    if (alreadyExists) {
+      return thunkAPI.rejectWithValue("This book is already in your library.");
+    }
+
+    return withAuth(thunkAPI, () =>
       axios
         .post(`/books/add/${bookId}`)
         .then((res) => res.data)
@@ -78,10 +86,10 @@ export const addRecommendedBook = createAsyncThunk(
             error.response?.data?.message || error.message,
           ),
         ),
-    ),
+    );
+  },
 );
 
-// Kullanıcının kitaplarını getir (GET /books/own)
 export const fetchOwnBooks = createAsyncThunk(
   "books/fetchOwnBooks",
   (_, thunkAPI) =>
@@ -97,7 +105,6 @@ export const fetchOwnBooks = createAsyncThunk(
     ),
 );
 
-// Yeni kitap ekle (POST /books/add)
 export const addBook = createAsyncThunk("books/addBook", (bookData, thunkAPI) =>
   withAuth(thunkAPI, () =>
     axios
@@ -111,14 +118,13 @@ export const addBook = createAsyncThunk("books/addBook", (bookData, thunkAPI) =>
   ),
 );
 
-// Kullanıcının kitabını sil (DELETE /books/remove/{id})
 export const removeBook = createAsyncThunk(
   "books/removeBook",
   (bookId, thunkAPI) =>
     withAuth(thunkAPI, () =>
       axios
         .delete(`/books/remove/${bookId}`)
-        .then(() => bookId) // başarılıysa sadece id dön
+        .then(() => bookId)
         .catch((error) =>
           thunkAPI.rejectWithValue(
             error.response?.data?.message || error.message,
@@ -127,7 +133,6 @@ export const removeBook = createAsyncThunk(
     ),
 );
 
-// Okuma başlat (POST /books/reading/start)
 export const startReading = createAsyncThunk(
   "books/startReading",
   ({ bookId, page }, thunkAPI) =>
@@ -143,7 +148,6 @@ export const startReading = createAsyncThunk(
     ),
 );
 
-// Okuma bitir (POST /books/reading/finish)
 export const finishReading = createAsyncThunk(
   "books/finishReading",
   ({ bookId, page }, thunkAPI) =>
@@ -159,7 +163,6 @@ export const finishReading = createAsyncThunk(
     ),
 );
 
-// Okuma kaydını sil (DELETE /books/reading)
 export const deleteReading = createAsyncThunk(
   "books/deleteReading",
   (_, thunkAPI) =>

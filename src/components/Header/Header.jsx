@@ -27,7 +27,6 @@ const Header = () => {
     try {
       await dispatch(logoutUser());
       await persistor.purge();
-      console.log("Storage temizlendi", persistor);
       toast.success("Logout successful!");
       navigate("/login");
     } catch (error) {
