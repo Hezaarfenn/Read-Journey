@@ -95,7 +95,7 @@ const MyTraining = () => {
                 {book.author}
               </p>
             </div>
-            <svg width="50" height="50">
+            <svg width="50" height="50" className="cursor-pointer">
               <use href="/sprite.svg#icon-rec" />
             </svg>
           </div>
