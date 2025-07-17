@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import Loader from "../Loader/Loader";
 
-const MyTraining = () => {
+const MyTraining = ({ recActive }) => {
   const book = useSelector((state) => state.books.bookDetails);
 
   return (
@@ -21,9 +21,19 @@ const MyTraining = () => {
             <h2 className="text-xl font-bold">{book.title}</h2>
             <p className="text-sm text-[#686868] font-medium">{book.author}</p>
           </div>
-          <svg width="50" height="50" className="cursor-pointer">
-            <use href="/sprite.svg#icon-rec" />
-          </svg>
+
+          {/* Rec/Stop Button */}
+          <div className="cursor-pointer">
+            {recActive ? (
+              <svg width="50" height="50" className="cursor-pointer">
+                <use href="/sprite.svg#icon-stop" />
+              </svg>
+            ) : (
+              <svg width="50" height="50" className="cursor-pointer">
+                <use href="/sprite.svg#icon-rec" />
+              </svg>
+            )}
+          </div>
         </div>
       ) : (
         <div className="mt-20 flex items-center justify-center h-20 w-20">

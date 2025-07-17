@@ -136,31 +136,34 @@ export const removeBook = createAsyncThunk(
 export const startReading = createAsyncThunk(
   "books/startReading",
   async ({ bookId, page }, thunkAPI) => {
-    try {
-      const response = await axios.post("/books/reading/start", {
-        bookId,
-        page,
-      });
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
+    return withAuth(thunkAPI, async () => {
+      try {
+        const response = await axios.post("/books/reading/start", {
+          id: bookId,
+          page,
+        });
+        return response.data;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      }
+    });
   },
 );
 
 export const finishReading = createAsyncThunk(
   "books/finishReading",
   ({ bookId, page }, thunkAPI) =>
-    withAuth(thunkAPI, () =>
-      axios
-        .post("/books/reading/finish", { bookId, page })
-        .then((res) => res.data)
-        .catch((error) =>
-          thunkAPI.rejectWithValue(
-            error.response?.data?.message || error.message,
-          ),
-        ),
-    ),
+    withAuth(thunkAPI, async () => {
+      try {
+        const response = await axios.post("/books/reading/finish", {
+          id: bookId,
+          page,
+        });
+        return response.data;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error.response.data);
+      }
+    }),
 );
 
 export const deleteReading = createAsyncThunk(
