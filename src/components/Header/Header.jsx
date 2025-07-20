@@ -68,17 +68,6 @@ const Header = () => {
           >
             My library
           </NavLink>
-
-          <NavLink
-            to="/reading"
-            className={({ isActive }) =>
-              `pb-2 border-b-[3px] border-solid text-white transition ${
-                isActive ? "border-[#4F92F7]" : "border-transparent"
-              }`
-            }
-          >
-            My training
-          </NavLink>
         </div>
 
         <div className="flex items-center gap-4">

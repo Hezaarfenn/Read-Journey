@@ -18,6 +18,7 @@ const initialState = {
   bookDetails: null,
   isLoading: false,
   error: null,
+  sessions: [],
   filter: {
     title: "",
     author: "",
@@ -41,7 +42,30 @@ const booksSlice = createSlice({
     resetBookDetails: (state) => {
       state.bookDetails = null;
     },
+    addSession: (state, action) => {
+      state.sessions.push(action.payload);
+    },
+    updateSession: (state, action) => {
+      const index = state.sessions.findIndex(
+        (session) => session.id === action.payload.id,
+      );
+      if (index !== -1) {
+        state.sessions[index] = {
+          ...state.sessions[index],
+          ...action.payload,
+        };
+      }
+    },
+    removeSession: (state, action) => {
+      state.sessions = state.sessions.filter(
+        (session) => session.id !== action.payload,
+      );
+    },
+    clearSessions: (state) => {
+      state.sessions = [];
+    },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchRecommendedBooks.pending, (state) => {
