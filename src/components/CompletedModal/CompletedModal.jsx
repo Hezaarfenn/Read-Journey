@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowCompletionModal } from "../../redux/books/booksSlice";
 import BaseModal from "../BaseModal/BaseModal";
 
 const CompletedModal = () => {
-  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const dispatch = useDispatch();
+  const { showCompletionModal } = useSelector((state) => state.books);
+  const handleClose = () => {
+    dispatch(setShowCompletionModal(false));
+  };
 
   return (
     <BaseModal
       isOpen={showCompletionModal}
-      onClose={() => setShowCompletionModal(false)}
+      onRequestClose={handleClose}
       title="Congratulations!"
     >
       <div className="h-[320px] flex flex-col items-center text-center py-12">
@@ -20,7 +25,7 @@ const CompletedModal = () => {
           The book is read
         </h2>
         <p className="w-[242px] text-sm font-medium text-[#686868] mt-3.5">
-          It was an <span className="text-[#F9F9F9]">exciting journey</span> ,
+          It was an <span className="text-[#F9F9F9]">exciting journey</span>,
           where each page revealed new horizons, and the characters became
           inseparable friends.
         </p>

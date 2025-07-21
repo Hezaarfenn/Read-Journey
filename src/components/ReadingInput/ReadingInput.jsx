@@ -22,19 +22,34 @@ const ReadingInput = () => {
     sessionsByBookId = {},
     startPage,
     stopPage,
+    bookDetails,
   } = useSelector((state) => state.books);
 
   const sessions = sessionsByBookId[id] || [];
+  const totalPages = bookDetails?.totalPages || 0;
+
+  const lastSession = sessions
+    .filter((s) => !s.isActive)
+    .sort((a, b) => new Date(b.endTime) - new Date(a.endTime))[0];
+
+  const lastPageRead = lastSession?.endPage || 0;
 
   const handleStartReading = () => {
-    if (!startPage || isNaN(startPage) || startPage <= 0) {
+    const startPageNum = Number(startPage);
+
+    if (!startPage || isNaN(startPageNum) || startPageNum <= 0) {
       toast.error("Please enter a valid start page.");
+      return;
+    }
+
+    if (startPageNum <= lastPageRead) {
+      toast.error(`Please enter a page number greater than ${lastPageRead}`);
       return;
     }
 
     const newSession = {
       id: Date.now(),
-      startPage: Number(startPage),
+      startPage: startPageNum,
       startTime: new Date().toISOString(),
       isActive: true,
       isLoading: true,
@@ -49,7 +64,7 @@ const ReadingInput = () => {
       dispatch(setViewMode("diary"));
     }
 
-    dispatch(startReading({ bookId: id, page: Number(startPage) }))
+    dispatch(startReading({ bookId: id, page: startPageNum }))
       .unwrap()
       .then(() => {
         toast.success("Reading started!");
@@ -73,28 +88,37 @@ const ReadingInput = () => {
   };
 
   const handleStopReading = () => {
-    if (!stopPage || isNaN(stopPage) || stopPage <= 0) {
+    const stopPageNum = Number(stopPage);
+
+    if (!stopPage || isNaN(stopPageNum) || stopPageNum <= 0) {
       toast.error("Please enter a valid stop page.");
       return;
     }
 
     if (!currentSession) return;
 
+    if (stopPageNum <= currentSession.startPage) {
+      toast.error(
+        `Stop page must be greater than start page (${currentSession.startPage})`,
+      );
+      return;
+    }
+
     const endTime = new Date();
     const duration = Math.round(
       (new Date(endTime) - new Date(currentSession.startTime)) / 1000 / 60,
     );
-    const pagesRead = Number(stopPage) - currentSession.startPage;
+    const pagesRead = stopPageNum - currentSession.startPage;
     const pagesPerHour = Math.round((pagesRead / duration) * 60);
 
-    dispatch(finishReading({ bookId: id, page: Number(stopPage) }))
+    dispatch(finishReading({ bookId: id, page: stopPageNum }))
       .unwrap()
-      .then((response) => {
+      .then(() => {
         toast.success("Reading stopped!");
 
         const updatedSession = {
           ...currentSession,
-          endPage: Number(stopPage),
+          endPage: stopPageNum,
           endTime: endTime.toISOString(),
           duration: duration,
           pagesRead: pagesRead,
@@ -108,7 +132,7 @@ const ReadingInput = () => {
         dispatch(setIsRecording(false));
         dispatch(setStopPage(""));
 
-        if (response.isCompleted) {
+        if (stopPageNum >= totalPages) {
           dispatch(setShowCompletionModal(true));
         }
       })
@@ -136,7 +160,7 @@ const ReadingInput = () => {
 
           <button
             onClick={handleStartReading}
-            className="w-[114px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
+            className="mb-8 w-[114px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
           >
             To start
           </button>

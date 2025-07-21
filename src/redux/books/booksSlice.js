@@ -108,6 +108,10 @@ const booksSlice = createSlice({
         };
       }
     },
+    updateLastReadPage: (state, action) => {
+      const { bookId, page } = action.payload;
+      state.lastReadPages[bookId] = page;
+    },
     removeSession: (state, action) => {
       if (!state.currentBookId) return;
 
@@ -208,6 +212,7 @@ export const {
   setShowCompletionModal,
   addSession,
   updateSession,
+  updateLastReadPage,
   removeSession,
   clearSessions,
   initializeReading,
