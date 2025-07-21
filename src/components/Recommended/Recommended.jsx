@@ -57,6 +57,10 @@ const Recommended = () => {
     dispatch(addRecommendedBook(selectedBook._id));
     setSelectedBook(null);
     setAddLibraryModalOpen(true);
+
+    setTimeout(() => {
+      setAddLibraryModalOpen(false);
+    }, 1000);
   };
 
   if (isLoading) {

@@ -18,7 +18,16 @@ const initialState = {
   bookDetails: null,
   isLoading: false,
   error: null,
+  // Reading session state
+  currentSession: null,
+  currentBookId: null,
   sessions: [],
+  sessionsByBookId: {},
+  isRecording: false,
+  viewMode: "diary",
+  startPage: "",
+  stopPage: "",
+  // Filter state
   filter: {
     title: "",
     author: "",
@@ -27,6 +36,8 @@ const initialState = {
     page: 1,
     totalPages: 1,
   },
+  // Modal state
+  showCompletionModal: false,
 };
 
 const booksSlice = createSlice({
@@ -42,27 +53,97 @@ const booksSlice = createSlice({
     resetBookDetails: (state) => {
       state.bookDetails = null;
     },
+
+    // Reading session actions
+    setCurrentSession: (state, action) => {
+      state.currentSession = action.payload;
+    },
+    setIsRecording: (state, action) => {
+      state.isRecording = action.payload;
+    },
+    setViewMode: (state, action) => {
+      state.viewMode = action.payload;
+    },
+    setStartPage: (state, action) => {
+      state.startPage = action.payload;
+    },
+    setStopPage: (state, action) => {
+      state.stopPage = action.payload;
+    },
+    setShowCompletionModal: (state, action) => {
+      state.showCompletionModal = action.payload;
+    },
+    setCurrentBookId: (state, action) => {
+      state.currentBookId = action.payload;
+    },
+
     addSession: (state, action) => {
-      state.sessions.push(action.payload);
+      if (!state.currentBookId) return;
+
+      if (!state.sessionsByBookId[state.currentBookId]) {
+        state.sessionsByBookId[state.currentBookId] = [];
+      }
+
+      state.sessionsByBookId[state.currentBookId].push(action.payload);
+
+      if (
+        state.sessionsByBookId[state.currentBookId].length === 1 &&
+        state.viewMode === "progress"
+      ) {
+        state.viewMode = "diary";
+      }
     },
     updateSession: (state, action) => {
-      const index = state.sessions.findIndex(
+      if (!state.currentBookId) return;
+
+      const sessions = state.sessionsByBookId[state.currentBookId] || [];
+      const index = sessions.findIndex(
         (session) => session.id === action.payload.id,
       );
+
       if (index !== -1) {
-        state.sessions[index] = {
-          ...state.sessions[index],
+        sessions[index] = {
+          ...sessions[index],
           ...action.payload,
         };
       }
     },
     removeSession: (state, action) => {
-      state.sessions = state.sessions.filter(
-        (session) => session.id !== action.payload,
-      );
+      if (!state.currentBookId) return;
+
+      state.sessionsByBookId[state.currentBookId] = state.sessionsByBookId[
+        state.currentBookId
+      ].filter((session) => session.id !== action.payload);
     },
     clearSessions: (state) => {
-      state.sessions = [];
+      if (!state.currentBookId) return;
+
+      state.sessionsByBookId[state.currentBookId] = [];
+      state.currentSession = null;
+      state.isRecording = false;
+      state.startPage = "";
+      state.stopPage = "";
+    },
+
+    initializeReading: (state, action) => {
+      const bookId = action.payload;
+      if (!bookId) return;
+
+      // sessionsByBookId yoksa oluştur
+      if (!state.sessionsByBookId) {
+        state.sessionsByBookId = {};
+      }
+
+      state.currentBookId = bookId;
+
+      // Bu kitap için oturum yoksa boş dizi oluştur
+      if (!state.sessionsByBookId[bookId]) {
+        state.sessionsByBookId[bookId] = [];
+      }
+
+      if (state.sessionsByBookId[bookId].length === 0) {
+        state.viewMode = "progress";
+      }
     },
   },
 
@@ -115,6 +196,21 @@ const booksSlice = createSlice({
   },
 });
 
-export const { resetBookDetails, setAuthorFilter, setTitleFilter } =
-  booksSlice.actions;
+export const {
+  resetBookDetails,
+  setAuthorFilter,
+  setTitleFilter,
+  setCurrentSession,
+  setIsRecording,
+  setViewMode,
+  setStartPage,
+  setStopPage,
+  setShowCompletionModal,
+  addSession,
+  updateSession,
+  removeSession,
+  clearSessions,
+  initializeReading,
+} = booksSlice.actions;
+
 export default booksSlice.reducer;
