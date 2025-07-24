@@ -10,9 +10,18 @@ import BookLoader from "../../assets/book-loader.json";
 const LeftDiary = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { sessionsByBookId = {} } = useSelector((state) => state.books);
+  const { sessionsByBookId = {}, bookDetails } = useSelector(
+    (state) => state.books,
+  );
 
   const sessions = sessionsByBookId[id] || [];
+  const totalPages = bookDetails?.totalPages || 0;
+
+  // Her oturum için yüzdeyi kitabın toplam sayfasına göre hesapla
+  const getSessionPercentage = (session) => {
+    if (totalPages === 0 || !session.pagesRead) return 0;
+    return ((session.pagesRead / totalPages) * 100).toFixed(1);
+  };
 
   const handleDeleteSession = (sessionId) => {
     dispatch(removeSession(sessionId));
@@ -72,7 +81,7 @@ const LeftDiary = () => {
                 <div className="ml-7 flex items-center justify-between mt-7">
                   <div className="flex flex-col gap-2">
                     <p className="text-xl font-medium">
-                      {((session.pagesRead / 500) * 100).toFixed(1)}%
+                      {getSessionPercentage(session)}%
                     </p>
                     <p className="text-[12px] font-medium text-[#686868]">
                       {session.duration} minutes

@@ -115,9 +115,21 @@ const booksSlice = createSlice({
     removeSession: (state, action) => {
       if (!state.currentBookId) return;
 
-      state.sessionsByBookId[state.currentBookId] = state.sessionsByBookId[
-        state.currentBookId
-      ].filter((session) => session.id !== action.payload);
+      const sessionId = action.payload;
+
+      state.sessionsByBookId[state.currentBookId] =
+        state.sessionsByBookId[state.currentBookId]?.filter(
+          (session) => session.id !== sessionId,
+        ) || [];
+
+      if (state.currentSession && state.currentSession.id === sessionId) {
+        state.currentSession = null;
+        state.isRecording = false;
+      }
+
+      if (state.sessionsByBookId[state.currentBookId].length === 0) {
+        state.viewMode = "progress";
+      }
     },
     clearSessions: (state) => {
       if (!state.currentBookId) return;

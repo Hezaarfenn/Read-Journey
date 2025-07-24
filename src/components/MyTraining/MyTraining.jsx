@@ -20,6 +20,9 @@ const MyTraining = ({ recActive }) => {
           <div className="flex flex-col gap-2 items-center text-white">
             <h2 className="text-xl font-bold">{book.title}</h2>
             <p className="text-sm text-[#686868] font-medium">{book.author}</p>
+            <p className="text-[10px]/[12px] font-medium text-[#F9F9F9]">
+              {book.totalPages} pages
+            </p>
           </div>
 
           {/* Rec/Stop Button */}

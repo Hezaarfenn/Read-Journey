@@ -33,7 +33,16 @@ const MyLibrary = () => {
 
   const filteredBooks = booksInLibrary.filter((book) => {
     if (selectedFilter === "all") return true;
-    return book.status === selectedFilter;
+
+    const pagesRead = book.pagesRead || 0;
+    const totalPages = book.totalPages || 0;
+
+    if (selectedFilter === "unread") return pagesRead === 0;
+    if (selectedFilter === "in-progress")
+      return pagesRead > 0 && pagesRead < totalPages;
+    if (selectedFilter === "done") return pagesRead >= totalPages;
+
+    return true;
   });
 
   useEffect(() => {

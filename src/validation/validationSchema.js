@@ -28,3 +28,9 @@ export const loginSchema = Yup.object({
     .required("Password is required")
     .min(6, "Password must be at least 7 characters"),
 });
+
+export const ReadingInputSchema = Yup.object({
+  page: Yup.number()
+    .required("Page number is required")
+    .min(1, "Page must be > 0"),
+});

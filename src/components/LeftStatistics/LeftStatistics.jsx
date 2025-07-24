@@ -6,22 +6,35 @@ import CompletedModal from "../CompletedModal/CompletedModal";
 
 const LeftStatistics = () => {
   const { id } = useParams();
-  const { sessionsByBookId = {} } = useSelector((state) => state.books);
+  const { sessionsByBookId = {}, bookDetails } = useSelector(
+    (state) => state.books,
+  );
 
   const sessions = sessionsByBookId[id] || [];
+  const totalPages = bookDetails?.totalPages || 0;
 
-  const totalPagesRead = sessions
-    .filter((s) => !s.isActive && s.pagesRead)
-    .reduce((total, session) => total + session.pagesRead, 0);
+  // Sadece tamamlanmış oturumları filtrele ve sayfa ilerlemesini doğru hesapla
+  const completedSessions = sessions.filter((s) => !s.isActive && s.endPage);
+  const lastSession = completedSessions.sort(
+    (a, b) => new Date(b.endTime) - new Date(a.endTime),
+  )[0];
 
-  const progressPercentage = ((totalPagesRead / 500) * 100).toFixed(2);
+  // Toplam okunan sayfaları doğru hesapla (son oturumun endPage'i)
+  const totalPagesRead = lastSession?.endPage || 0;
+
+  let progressPercentage;
+  if (totalPages > 0 && totalPagesRead >= totalPages) {
+    progressPercentage = "100.00";
+  } else {
+    progressPercentage =
+      totalPages > 0
+        ? ((totalPagesRead / totalPages) * 100).toFixed(2)
+        : "0.00";
+  }
 
   return (
     <section className="flex flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
-      {/* Reading Input */}
       <ReadingInput />
-
-      {/* View Mode Switcher */}
       <ViewModeSwitcher title="Statistics" />
       <div className="w-[293px] mt-5">
         <p className="text-sm font-medium text-[#686868]">
@@ -31,7 +44,6 @@ const LeftStatistics = () => {
         </p>
       </div>
 
-      {/* Statistics */}
       <div className="w-[313px] border border-transparent rounded-xl bg-[#262626] p-5 mt-5">
         <div className="flex flex-col items-center justify-center h-[189px]">
           <svg className="w-[189px] h-[189px]">
@@ -51,7 +63,6 @@ const LeftStatistics = () => {
         </div>
       </div>
 
-      {/* Completion Modal */}
       <CompletedModal type="statistics" />
     </section>
   );

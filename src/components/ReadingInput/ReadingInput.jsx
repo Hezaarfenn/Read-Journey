@@ -1,9 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { startReading, finishReading } from "../../redux/books/booksOps";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import {
-  setStartPage,
-  setStopPage,
   setCurrentSession,
   addSession,
   updateSession,
@@ -12,6 +11,7 @@ import {
   setShowCompletionModal,
   removeSession,
 } from "../../redux/books/booksSlice";
+import { ReadingInputSchema } from "../../validation/validationSchema";
 import { toast } from "react-toastify";
 
 const ReadingInput = () => {
@@ -20,8 +20,6 @@ const ReadingInput = () => {
   const {
     currentSession,
     sessionsByBookId = {},
-    startPage,
-    stopPage,
     bookDetails,
   } = useSelector((state) => state.books);
 
@@ -34,16 +32,21 @@ const ReadingInput = () => {
 
   const lastPageRead = lastSession?.endPage || 0;
 
-  const handleStartReading = () => {
-    const startPageNum = Number(startPage);
+  // Kitap tamamlanmış mı kontrol et
+  const isBookCompleted = totalPages > 0 && lastPageRead >= totalPages;
 
-    if (!startPage || isNaN(startPageNum) || startPageNum <= 0) {
-      toast.error("Please enter a valid start page.");
-      return;
-    }
+  const handleStartReading = (
+    values,
+    { setSubmitting, setFieldError, resetForm },
+  ) => {
+    const startPageNum = Number(values.page);
 
     if (startPageNum <= lastPageRead) {
-      toast.error(`Please enter a page number greater than ${lastPageRead}`);
+      setFieldError(
+        "page",
+        `Please enter a page number greater than ${lastPageRead}`,
+      );
+      setSubmitting(false);
       return;
     }
 
@@ -58,7 +61,6 @@ const ReadingInput = () => {
     dispatch(setCurrentSession(newSession));
     dispatch(addSession(newSession));
     dispatch(setIsRecording(true));
-    dispatch(setStartPage(""));
 
     if (sessions.length === 0) {
       dispatch(setViewMode("diary"));
@@ -68,15 +70,13 @@ const ReadingInput = () => {
       .unwrap()
       .then(() => {
         toast.success("Reading started!");
-        const updatedSession = {
-          ...newSession,
-          isLoading: false,
-        };
+        const updatedSession = { ...newSession, isLoading: false };
         dispatch(updateSession(updatedSession));
         dispatch(setCurrentSession(updatedSession));
+        resetForm();
       })
       .catch(() => {
-        toast.error("Something went wrong. Try again.");
+        setFieldError("page", "Something went wrong. Try again.");
         dispatch(removeSession(newSession.id));
         dispatch(setCurrentSession(null));
         dispatch(setIsRecording(false));
@@ -84,23 +84,24 @@ const ReadingInput = () => {
         if (sessions.length === 1) {
           dispatch(setViewMode("progress"));
         }
-      });
+      })
+      .finally(() => setSubmitting(false));
   };
 
-  const handleStopReading = () => {
-    const stopPageNum = Number(stopPage);
-
-    if (!stopPage || isNaN(stopPageNum) || stopPageNum <= 0) {
-      toast.error("Please enter a valid stop page.");
-      return;
-    }
+  const handleStopReading = (
+    values,
+    { setSubmitting, setFieldError, resetForm },
+  ) => {
+    const stopPageNum = Number(values.page);
 
     if (!currentSession) return;
 
     if (stopPageNum <= currentSession.startPage) {
-      toast.error(
+      setFieldError(
+        "page",
         `Stop page must be greater than start page (${currentSession.startPage})`,
       );
+      setSubmitting(false);
       return;
     }
 
@@ -108,7 +109,9 @@ const ReadingInput = () => {
     const duration = Math.round(
       (new Date(endTime) - new Date(currentSession.startTime)) / 1000 / 60,
     );
-    const pagesRead = stopPageNum - currentSession.startPage;
+    // Bu oturumda okunan sayfa sayısı (toplam değil)
+    // +1 ekliyoruz çünkü başlangıç sayfası da dahil
+    const pagesRead = stopPageNum - currentSession.startPage + 1;
     const pagesPerHour = Math.round((pagesRead / duration) * 60);
 
     dispatch(finishReading({ bookId: id, page: stopPageNum }))
@@ -120,9 +123,9 @@ const ReadingInput = () => {
           ...currentSession,
           endPage: stopPageNum,
           endTime: endTime.toISOString(),
-          duration: duration,
-          pagesRead: pagesRead,
-          pagesPerHour: pagesPerHour,
+          duration,
+          pagesRead, // Bu oturumda okunan sayfa sayısı
+          pagesPerHour,
           isActive: false,
           isLoading: false,
         };
@@ -130,16 +133,38 @@ const ReadingInput = () => {
         dispatch(updateSession(updatedSession));
         dispatch(setCurrentSession(null));
         dispatch(setIsRecording(false));
-        dispatch(setStopPage(""));
 
         if (stopPageNum >= totalPages) {
           dispatch(setShowCompletionModal(true));
         }
+        resetForm();
       })
       .catch(() => {
-        toast.error("Something went wrong. Try again.");
-      });
+        setFieldError("page", "Something went wrong. Try again.");
+      })
+      .finally(() => setSubmitting(false));
   };
+
+  // Kitap tamamlandıysa sadece tebrik mesajı göster
+  if (isBookCompleted) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8">
+        <div className="text-center">
+          <div className="mb-4">
+            <svg className="w-16 h-16 mx-auto text-green-500">
+              <use href="/sprite.svg#icon-check-circle" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-[#F9F9F9] mb-2">
+            Congratulations! 🎉
+          </h3>
+          <p className="text-sm text-[#686868]">
+            You have completed this book!
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentSession?.isActive) {
     //Start Reading
@@ -150,20 +175,35 @@ const ReadingInput = () => {
         </p>
 
         <div className="flex flex-1/3 flex-col gap-2 mt-2">
-          <input
-            type="text"
-            placeholder="Page number:"
-            value={startPage}
-            onChange={(e) => dispatch(setStartPage(e.target.value))}
-            className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]"
-          />
-
-          <button
-            onClick={handleStartReading}
-            className="mb-8 w-[114px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
+          <Formik
+            initialValues={{ page: "" }}
+            validationSchema={ReadingInputSchema}
+            onSubmit={handleStartReading}
           >
-            To start
-          </button>
+            {({ isSubmitting }) => (
+              <Form className="flex flex-col">
+                <Field
+                  name="page"
+                  type="text"
+                  placeholder="Page number:"
+                  className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868] hover:border-[#F9F9F9]/10 focus:outline-none"
+                />
+                <ErrorMessage
+                  name="page"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mb-8 w-[114px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
+                >
+                  To start
+                </button>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
     );
@@ -175,20 +215,35 @@ const ReadingInput = () => {
       <p className="ml-4 text-[14px] font-medium text-[#F9F9F9]">Stop page:</p>
 
       <div className="flex flex-1/3 flex-col gap-2 mt-2">
-        <input
-          type="text"
-          placeholder="Page number:"
-          value={stopPage}
-          onChange={(e) => dispatch(setStopPage(e.target.value))}
-          className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]"
-        />
-
-        <button
-          onClick={handleStopReading}
-          className="w-[114px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
+        <Formik
+          initialValues={{ page: "" }}
+          validationSchema={ReadingInputSchema}
+          onSubmit={handleStopReading}
         >
-          To stop
-        </button>
+          {({ isSubmitting }) => (
+            <Form className="flex flex-col">
+              <Field
+                name="page"
+                type="text"
+                placeholder="Page number:"
+                className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868] hover:border-[#F9F9F9]/10 focus:outline-none"
+              />
+              <ErrorMessage
+                name="page"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-[114px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
+              >
+                To stop
+              </button>
+            </Form>
+          )}
+        </Formik>
       </div>
     </div>
   );
