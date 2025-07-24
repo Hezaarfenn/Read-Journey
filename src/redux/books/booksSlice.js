@@ -145,14 +145,12 @@ const booksSlice = createSlice({
       const bookId = action.payload;
       if (!bookId) return;
 
-      // sessionsByBookId yoksa oluştur
       if (!state.sessionsByBookId) {
         state.sessionsByBookId = {};
       }
 
       state.currentBookId = bookId;
 
-      // Bu kitap için oturum yoksa boş dizi oluştur
       if (!state.sessionsByBookId[bookId]) {
         state.sessionsByBookId[bookId] = [];
       }

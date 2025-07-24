@@ -13,13 +13,11 @@ const LeftStatistics = () => {
   const sessions = sessionsByBookId[id] || [];
   const totalPages = bookDetails?.totalPages || 0;
 
-  // Sadece tamamlanmış oturumları filtrele ve sayfa ilerlemesini doğru hesapla
   const completedSessions = sessions.filter((s) => !s.isActive && s.endPage);
   const lastSession = completedSessions.sort(
     (a, b) => new Date(b.endTime) - new Date(a.endTime),
   )[0];
 
-  // Toplam okunan sayfaları doğru hesapla (son oturumun endPage'i)
   const totalPagesRead = lastSession?.endPage || 0;
 
   let progressPercentage;

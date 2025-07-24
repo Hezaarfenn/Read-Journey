@@ -32,7 +32,6 @@ const ReadingInput = () => {
 
   const lastPageRead = lastSession?.endPage || 0;
 
-  // Kitap tamamlanmış mı kontrol et
   const isBookCompleted = totalPages > 0 && lastPageRead >= totalPages;
 
   const handleStartReading = (
@@ -109,8 +108,7 @@ const ReadingInput = () => {
     const duration = Math.round(
       (new Date(endTime) - new Date(currentSession.startTime)) / 1000 / 60,
     );
-    // Bu oturumda okunan sayfa sayısı (toplam değil)
-    // +1 ekliyoruz çünkü başlangıç sayfası da dahil
+
     const pagesRead = stopPageNum - currentSession.startPage + 1;
     const pagesPerHour = Math.round((pagesRead / duration) * 60);
 
@@ -145,7 +143,6 @@ const ReadingInput = () => {
       .finally(() => setSubmitting(false));
   };
 
-  // Kitap tamamlandıysa sadece tebrik mesajı göster
   if (isBookCompleted) {
     return (
       <div className="flex flex-col items-center justify-center py-8">

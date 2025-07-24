@@ -13,6 +13,9 @@ const MyLibrary = () => {
   const dispatch = useDispatch();
 
   const booksInLibrary = useSelector((state) => state.books.ownBooks);
+  const sessionsByBookId = useSelector(
+    (state) => state.books.sessionsByBookId || {},
+  );
   const recommendedBooks = useSelector((state) =>
     Array.isArray(state.books?.recommended) ? state.books.recommended : [],
   );
@@ -31,16 +34,30 @@ const MyLibrary = () => {
   const [author, setAuthor] = useState("");
   const [pages, setPages] = useState("");
 
+  const getLastReadPage = (bookId) => {
+    const sessions = sessionsByBookId[bookId] || [];
+    const completedSessions = sessions.filter((s) => !s.isActive && s.endPage);
+
+    if (completedSessions.length === 0) return 0;
+
+    const lastSession = completedSessions.sort(
+      (a, b) => new Date(b.endTime) - new Date(a.endTime),
+    )[0];
+
+    return lastSession.endPage || 0;
+  };
+
   const filteredBooks = booksInLibrary.filter((book) => {
     if (selectedFilter === "all") return true;
 
-    const pagesRead = book.pagesRead || 0;
+    const lastReadPage = getLastReadPage(book._id);
     const totalPages = book.totalPages || 0;
 
-    if (selectedFilter === "unread") return pagesRead === 0;
+    if (selectedFilter === "unread") return lastReadPage === 0;
     if (selectedFilter === "in-progress")
-      return pagesRead > 0 && pagesRead < totalPages;
-    if (selectedFilter === "done") return pagesRead >= totalPages;
+      return lastReadPage > 0 && lastReadPage < totalPages;
+    if (selectedFilter === "done")
+      return totalPages > 0 && lastReadPage >= totalPages;
 
     return true;
   });
@@ -154,7 +171,7 @@ const MyLibrary = () => {
 
           <a
             href="/recommended"
-            className="mt-[26px] flex justify-between text-[#686868] text-[14px] font-medium cursor-pointer underline hover:text-[#F9F9F9]/50"
+            className="mt-[26px] flex justify-between text-[#686868] text-[#14px] font-medium cursor-pointer underline hover:text-[#F9F9F9]/50"
           >
             <span>Home</span>
             <svg width="24" height="24">
@@ -200,7 +217,7 @@ const MyLibrary = () => {
                   src={book.imageUrl}
                   alt={book.title}
                   onClick={() => setSelectedBook(book)}
-                  className="w-[137px] h-[208px] object-cover mx-auto rounded-lg"
+                  className="w-[137px] h-[208px] object-cover mx-auto rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                 />
                 <div className="w-[137px] flex justify-between items-center">
                   <div className="flex flex-col gap-0.5">

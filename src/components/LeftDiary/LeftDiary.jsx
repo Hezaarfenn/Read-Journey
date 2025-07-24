@@ -17,7 +17,6 @@ const LeftDiary = () => {
   const sessions = sessionsByBookId[id] || [];
   const totalPages = bookDetails?.totalPages || 0;
 
-  // Her oturum için yüzdeyi kitabın toplam sayfasına göre hesapla
   const getSessionPercentage = (session) => {
     if (totalPages === 0 || !session.pagesRead) return 0;
     return ((session.pagesRead / totalPages) * 100).toFixed(1);
