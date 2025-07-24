@@ -171,7 +171,7 @@ const MyLibrary = () => {
 
           <a
             href="/recommended"
-            className="mt-[26px] flex justify-between text-[#686868] text-[#14px] font-medium cursor-pointer underline hover:text-[#F9F9F9]/50"
+            className="mt-[26px] flex justify-between text-[#686868] text-[14px] font-medium cursor-pointer underline hover:text-[#F9F9F9]/50"
           >
             <span>Home</span>
             <svg width="24" height="24">

@@ -5,7 +5,7 @@ import ReadingInput from "../ReadingInput/ReadingInput";
 import ViewModeSwitcher from "../ViewModeSwitcher/ViewModeSwitcher";
 import CompletedModal from "../CompletedModal/CompletedModal";
 import Lottie from "lottie-react";
-import BookLoader from "../../assets/book-loader.json";
+import BookLoader from "../../assets/book-animation.json";
 
 const LeftDiary = () => {
   const { id } = useParams();
@@ -68,7 +68,7 @@ const LeftDiary = () => {
                 </div>
               </div>
 
-              {session.isLoading ? (
+              {session.isLoading || session.isActive ? (
                 <div>
                   <Lottie
                     animationData={BookLoader}
@@ -105,7 +105,7 @@ const LeftDiary = () => {
                     </div>
 
                     <p className="w-[55px] text-[12px] font-medium text-[#686868]">
-                      {session.pagesPerHour} pages per hour
+                      {session.pagesRead} pages per hour
                     </p>
                   </div>
                 </div>

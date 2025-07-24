@@ -1,8 +1,12 @@
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import ReadingInput from "../ReadingInput/ReadingInput";
 import ViewModeSwitcher from "../ViewModeSwitcher/ViewModeSwitcher";
 import CompletedModal from "../CompletedModal/CompletedModal";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const LeftStatistics = () => {
   const { id } = useParams();
@@ -30,6 +34,31 @@ const LeftStatistics = () => {
         : "0.00";
   }
 
+  const doughnutData = {
+    labels: ["Read", "Unread"],
+    datasets: [
+      {
+        data: [totalPagesRead, totalPages - totalPagesRead],
+        backgroundColor: ["#30B94D", "#393939"],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const doughnutOptions = {
+    cutout: "70%",
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.label}: ${context.raw} pages`,
+        },
+      },
+    },
+  };
+
   return (
     <section className="flex flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
       <ReadingInput />
@@ -42,21 +71,21 @@ const LeftStatistics = () => {
         </p>
       </div>
 
-      <div className="w-[313px] border border-transparent rounded-xl bg-[#262626] p-5 mt-5">
-        <div className="flex flex-col items-center justify-center h-[189px]">
-          <svg className="w-[189px] h-[189px]">
-            <use href="/sprite.svg#icon-block" />
-          </svg>
-          <div className="flex items-baseline gap-2 mt-5">
-            <p className="w-3.5 h-3.5 bg-[#30B94D] border border-transparent rounded-[4px]"></p>
-            <div>
-              <p className="text-xl font-medium text-[#F9F9F9]">
-                {progressPercentage}%
-              </p>
-              <p className="text-[12px] font-medium text-[#686868]">
-                {totalPagesRead} pages read
-              </p>
-            </div>
+      <div className="relative w-[313px] border border-transparent rounded-xl bg-[#262626] p-5 mt-5">
+        <div className="flex flex-col items-center justify-center h-[189px] relative">
+          <Doughnut
+            data={doughnutData}
+            options={doughnutOptions}
+            width={189}
+            height={189}
+          />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+            <p className="text-xl font-medium text-[#F9F9F9]">
+              {progressPercentage}%
+            </p>
+            <p className="text-[12px] font-medium text-[#686868]">
+              {totalPagesRead} pages read
+            </p>
           </div>
         </div>
       </div>
