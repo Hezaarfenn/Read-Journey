@@ -17,14 +17,6 @@ const ReadingPage = () => {
   const viewMode = booksState?.viewMode || "progress";
   const sessionsByBookId = booksState?.sessionsByBookId || {};
   const sessions = sessionsByBookId[id] || [];
-  const bookDetails = booksState?.bookDetails;
-
-  const lastSession = sessions
-    .filter((s) => !s.isActive)
-    .sort((a, b) => new Date(b.endTime) - new Date(a.endTime))[0];
-  const lastPageRead = lastSession?.endPage || 0;
-  const totalPages = bookDetails?.totalPages || 0;
-  const isBookCompleted = totalPages > 0 && lastPageRead >= totalPages;
 
   useEffect(() => {
     if (id) {
@@ -36,10 +28,6 @@ const ReadingPage = () => {
   const renderLeftContent = () => {
     if (sessions.length === 0) {
       return <LeftProgress />;
-    }
-
-    if (isBookCompleted) {
-      return <LeftStatistics />;
     }
 
     if (viewMode === "diary") {
