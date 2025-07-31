@@ -29,8 +29,29 @@ export const loginSchema = Yup.object({
     .min(6, "Password must be at least 7 characters"),
 });
 
-export const ReadingInputSchema = Yup.object({
+export const readingInputSchema = Yup.object({
   page: Yup.number()
     .required("Page number is required")
     .min(1, "Page must be > 0"),
+});
+
+export const recommendedFilterSchema = Yup.object({
+  title: Yup.string().trim(),
+  author: Yup.string().trim(),
+});
+
+export const addBookSchema = Yup.object({
+  title: Yup.string()
+    .required("Book title is required")
+    .min(1, "Title cannot be empty")
+    .trim(),
+  author: Yup.string()
+    .required("Author is required")
+    .min(1, "Author cannot be empty")
+    .trim(),
+  totalPages: Yup.number()
+    .required("Number of pages is required")
+    .positive("Number of pages must be positive")
+    .integer("Number of pages must be a whole number")
+    .min(1, "Book must have at least 1 page"),
 });

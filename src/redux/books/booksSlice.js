@@ -53,8 +53,22 @@ const booksSlice = createSlice({
     resetBookDetails: (state) => {
       state.bookDetails = null;
     },
+    clearBooksError: (state) => {
+      state.error = null;
+    },
+    clearBooksData: (state) => {
+      state.recommended = [];
+      state.myLibrary = [];
+      state.ownBooks = [];
+      state.bookDetails = null;
+      state.currentSession = null;
+      state.currentBookId = null;
+      state.sessions = [];
+      state.sessionsByBookId = {};
+      state.isRecording = false;
+      state.error = null;
+    },
 
-    // Reading session actions
     setCurrentSession: (state, action) => {
       state.currentSession = action.payload;
     },
@@ -172,6 +186,7 @@ const booksSlice = createSlice({
         state.recommended = action.payload.results;
         state.pagination.page = action.payload.page;
         state.pagination.totalPages = action.payload.totalPages;
+        state.error = null;
       })
       .addCase(fetchRecommendedBooks.rejected, (state, action) => {
         state.isLoading = false;
@@ -179,6 +194,10 @@ const booksSlice = createSlice({
       })
       .addCase(fetchBookDetails.fulfilled, (state, action) => {
         state.bookDetails = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchBookDetails.rejected, (state, action) => {
+        state.error = action.payload;
       })
       .addCase(addRecommendedBook.fulfilled, (state, action) => {
         if (
@@ -186,26 +205,60 @@ const booksSlice = createSlice({
         ) {
           state.ownBooks.push(action.payload);
         }
+        state.error = null;
+      })
+      .addCase(addRecommendedBook.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(fetchOwnBooks.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
       .addCase(fetchOwnBooks.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.ownBooks = action.payload.results;
+        state.error = null;
+      })
+      .addCase(fetchOwnBooks.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       })
       .addCase(addBook.fulfilled, (state, action) => {
         state.ownBooks.push(action.payload);
+        state.error = null;
+      })
+      .addCase(addBook.rejected, (state, action) => {
+        state.error = action.payload;
       })
       .addCase(removeBook.fulfilled, (state, action) => {
         state.ownBooks = state.ownBooks.filter(
           (book) => book._id !== action.payload,
         );
+        state.error = null;
+      })
+      .addCase(removeBook.rejected, (state, action) => {
+        state.error = action.payload;
       })
       .addCase(startReading.fulfilled, (state, action) => {
         state.bookDetails = action.payload;
+        state.error = null;
+      })
+      .addCase(startReading.rejected, (state, action) => {
+        state.error = action.payload;
       })
       .addCase(finishReading.fulfilled, (state, action) => {
         state.bookDetails = action.payload;
+        state.error = null;
+      })
+      .addCase(finishReading.rejected, (state, action) => {
+        state.error = action.payload;
       })
       .addCase(deleteReading.fulfilled, (state) => {
         state.bookDetails = null;
+        state.error = null;
+      })
+      .addCase(deleteReading.rejected, (state, action) => {
+        state.error = action.payload;
       });
   },
 });
@@ -226,6 +279,8 @@ export const {
   removeSession,
   clearSessions,
   initializeReading,
+  clearBooksError,
+  clearBooksData,
 } = booksSlice.actions;
 
 export default booksSlice.reducer;

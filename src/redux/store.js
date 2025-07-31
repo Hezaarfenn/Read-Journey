@@ -13,21 +13,25 @@ import storage from "redux-persist/lib/storage";
 import authReducer from "./auth/authSlice";
 import booksReducer from "./books/booksSlice";
 
-const rootPersistConfig = {
-  key: "root",
+const authPersistConfig = {
+  key: "auth",
   storage,
-  whitelist: ["auth", "books"],
+  whitelist: ["user", "token", "isLoggedIn"],
+};
+
+const booksPersistConfig = {
+  key: "books",
+  storage,
+  whitelist: ["ownBooks", "sessionsByBookId", "currentBookId"],
 };
 
 const rootReducer = combineReducers({
-  auth: authReducer,
-  books: booksReducer,
+  auth: persistReducer(authPersistConfig, authReducer),
+  books: persistReducer(booksPersistConfig, booksReducer),
 });
 
-const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
-
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -37,3 +41,19 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+const initializeAuth = () => {
+  const state = store.getState();
+  if (state.auth.token) {
+    import("./auth/authOps").then(({ setAuthHeader }) => {
+      setAuthHeader(state.auth.token);
+    });
+  }
+};
+
+persistor.subscribe(() => {
+  const { bootstrapped } = persistor.getState();
+  if (bootstrapped) {
+    initializeAuth();
+  }
+});

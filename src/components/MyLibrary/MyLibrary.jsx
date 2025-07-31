@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import {
   removeBook,
   fetchRecommendedBooks,
   addBook,
 } from "../../redux/books/booksOps";
+import { addBookSchema } from "../../validation/validationSchema";
 import BaseModal from "../BaseModal/BaseModal";
 import { toast } from "react-toastify";
 
@@ -21,7 +23,6 @@ const MyLibrary = () => {
   );
 
   const [selectedFilter, setSelectedFilter] = useState("all");
-
   const [selectedBook, setSelectedBook] = useState(null);
   const navigate = useNavigate();
 
@@ -29,10 +30,6 @@ const MyLibrary = () => {
     setSelectedBook(null);
     navigate(`/reading/${bookId}`);
   };
-
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [pages, setPages] = useState("");
 
   const getLastReadPage = (bookId) => {
     const sessions = sessionsByBookId[bookId] || [];
@@ -72,25 +69,17 @@ const MyLibrary = () => {
     return shuffled.slice(0, 3);
   }, [recommendedBooks]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!title.trim() || !author.trim() || !pages.trim()) {
-      toast.error("Please fill in all fields.");
-      return;
-    }
-
-    if (isNaN(pages) || pages <= 0) {
-      toast.error("Please enter a valid number of pages.");
-      return;
-    }
-
-    dispatch(addBook({ title, author, totalPages: Number(pages) }))
+  const handleSubmit = (values, { resetForm, setSubmitting }) => {
+    dispatch(
+      addBook({
+        title: values.title,
+        author: values.author,
+        totalPages: values.totalPages,
+      }),
+    )
       .unwrap()
       .then(() => {
-        setTitle("");
-        setAuthor("");
-        setPages("");
+        resetForm();
         toast.success("Book added successfully!");
       })
       .catch((error) => {
@@ -99,6 +88,9 @@ const MyLibrary = () => {
         } else {
           toast.error("Failed to add book. Please try again.");
         }
+      })
+      .finally(() => {
+        setSubmitting(false);
       });
   };
 
@@ -112,39 +104,98 @@ const MyLibrary = () => {
             Create your library:
           </p>
 
-          <form
+          <Formik
+            initialValues={{
+              title: "",
+              author: "",
+              totalPages: "",
+            }}
+            validationSchema={addBookSchema}
             onSubmit={handleSubmit}
-            className="flex flex-1/3 flex-col gap-2 mt-2"
           >
-            <input
-              type="text"
-              placeholder="Book title:"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]"
-            />
-            <input
-              type="text"
-              placeholder="The author:"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]"
-            />
-            <input
-              type="text"
-              placeholder="Number of pages:"
-              value={pages}
-              onChange={(e) => setPages(e.target.value)}
-              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]"
-            />
+            {({ errors, touched, isSubmitting }) => (
+              <Form className="flex flex-1/3 flex-col gap-2 mt-2">
+                <div className="relative">
+                  <label
+                    htmlFor="title"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#E3E3E3]/50 pointer-events-none"
+                  >
+                    Book title:
+                  </label>
+                  <Field
+                    type="text"
+                    name="title"
+                    id="title"
+                    placeholder="Enter text"
+                    className={`pl-[85px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] focus:outline-none ${
+                      errors.title && touched.title ? "border-red-500" : ""
+                    }`}
+                  />
+                </div>
+                <ErrorMessage
+                  name="title"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
 
-            <button
-              type="submit"
-              className="w-[131px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
-            >
-              Add book
-            </button>
-          </form>
+                <div className="relative">
+                  <label
+                    htmlFor="author"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#E3E3E3]/50 pointer-events-none"
+                  >
+                    The author:
+                  </label>
+                  <Field
+                    type="text"
+                    name="author"
+                    id="author"
+                    placeholder="Enter text"
+                    className={`pl-[95px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] focus:outline-none ${
+                      errors.author && touched.author ? "border-red-500" : ""
+                    }`}
+                  />
+                </div>
+                <ErrorMessage
+                  name="author"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+
+                <div className="relative">
+                  <label
+                    htmlFor="pages"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#E3E3E3]/50 pointer-events-none"
+                  >
+                    Number of pages:
+                  </label>
+                  <Field
+                    type="number"
+                    name="totalPages"
+                    id="pages"
+                    placeholder="0"
+                    className={`pl-[135px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] focus:outline-none ${
+                      errors.totalPages && touched.totalPages
+                        ? "border-red-500"
+                        : ""
+                    }`}
+                  />
+                </div>
+                <ErrorMessage
+                  name="totalPages"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-[131px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F9F9F9] hover:text-[#1F1F1F] disabled:hover:bg-transparent disabled:hover:text-[#F9F9F9]"
+                >
+                  {isSubmitting ? "Adding..." : "Add book"}
+                </button>
+              </Form>
+            )}
+          </Formik>
         </div>
 
         {/* Recommended books */}

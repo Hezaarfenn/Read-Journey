@@ -11,7 +11,7 @@ import {
   setShowCompletionModal,
   removeSession,
 } from "../../redux/books/booksSlice";
-import { ReadingInputSchema } from "../../validation/validationSchema";
+import { readingInputSchema } from "../../validation/validationSchema";
 import { toast } from "react-toastify";
 
 const ReadingInput = () => {
@@ -122,7 +122,7 @@ const ReadingInput = () => {
           endPage: stopPageNum,
           endTime: endTime.toISOString(),
           duration,
-          pagesRead, // Bu oturumda okunan sayfa sayısı
+          pagesRead,
           pagesPerHour,
           isActive: false,
           isLoading: false,
@@ -174,17 +174,26 @@ const ReadingInput = () => {
         <div className="flex flex-1/3 flex-col gap-2 mt-2">
           <Formik
             initialValues={{ page: "" }}
-            validationSchema={ReadingInputSchema}
+            validationSchema={readingInputSchema}
             onSubmit={handleStartReading}
           >
             {({ isSubmitting }) => (
               <Form className="flex flex-col">
-                <Field
-                  name="page"
-                  type="text"
-                  placeholder="Page number:"
-                  className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868] hover:border-[#F9F9F9]/10 focus:outline-none"
-                />
+                <div className="relative">
+                  <label
+                    htmlFor="page"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#E3E3E3]/50 pointer-events-none"
+                  >
+                    Page number:
+                  </label>
+                  <Field
+                    name="page"
+                    type="text"
+                    id="page"
+                    placeholder="0"
+                    className="pl-[115px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] hover:border-[#F9F9F9]/10 focus:outline-none"
+                  />
+                </div>
                 <ErrorMessage
                   name="page"
                   component="div"
@@ -214,17 +223,26 @@ const ReadingInput = () => {
       <div className="flex flex-1/3 flex-col gap-2 mt-2">
         <Formik
           initialValues={{ page: "" }}
-          validationSchema={ReadingInputSchema}
+          validationSchema={readingInputSchema}
           onSubmit={handleStopReading}
         >
           {({ isSubmitting }) => (
             <Form className="flex flex-col">
-              <Field
-                name="page"
-                type="text"
-                placeholder="Page number:"
-                className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868] hover:border-[#F9F9F9]/10 focus:outline-none"
-              />
+              <div className="relative">
+                <label
+                  htmlFor="page"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#E3E3E3]/50 pointer-events-none"
+                >
+                  Page number:
+                </label>
+                <Field
+                  name="page"
+                  type="text"
+                  id="page"
+                  placeholder="0"
+                  className="pl-[115px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] hover:border-[#F9F9F9]/10 focus:outline-none"
+                />
+              </div>
               <ErrorMessage
                 name="page"
                 component="div"

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import {
   addRecommendedBook,
   fetchRecommendedBooks,
 } from "../../redux/books/booksOps";
 import { setAuthorFilter, setTitleFilter } from "../../redux/books/booksSlice";
+import { recommendedFilterSchema } from "../../validation/validationSchema";
 import { toast } from "react-toastify";
 import Loader from "../Loader/Loader";
 import BaseModal from "../BaseModal/BaseModal";
@@ -19,8 +21,6 @@ const Recommended = () => {
     pagination,
   } = useSelector((state) => state.books || {});
 
-  const [titleInput, setTitleInput] = useState(filter.title || "");
-  const [authorInput, setAuthorInput] = useState(filter.author || "");
   const [selectedBook, setSelectedBook] = useState(null);
   const [addLibraryModalOpen, setAddLibraryModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,10 +46,9 @@ const Recommended = () => {
     state.books.ownBooks.some((b) => b.title === selectedBook?.title),
   );
 
-  const handleFilterSubmit = (e) => {
-    e.preventDefault();
-    dispatch(setTitleFilter(titleInput));
-    dispatch(setAuthorFilter(authorInput));
+  const handleFilterSubmit = (values) => {
+    dispatch(setTitleFilter(values.title));
+    dispatch(setAuthorFilter(values.author));
     setCurrentPage(1);
   };
 
@@ -72,33 +71,77 @@ const Recommended = () => {
       {/* Left Sidebar */}
       <div className="flex flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
         {/* Filter */}
-        <form onSubmit={handleFilterSubmit}>
-          <p className="ml-4 text-[14px] font-medium text-[#F9F9F9]">
-            Filters:
-          </p>
-          <div className="flex flex-1/3 flex-col gap-2 mt-2">
-            <input
-              type="text"
-              placeholder="Book title:"
-              value={titleInput}
-              onChange={(e) => setTitleInput(e.target.value)}
-              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868] hover:border-[#262626] focus:outline-none"
-            />
-            <input
-              type="text"
-              placeholder="The author:"
-              value={authorInput}
-              onChange={(e) => setAuthorInput(e.target.value)}
-              className="w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868] hover:border-[#262626] focus:outline-none"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-[122px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer hover:bg-[#F9F9F9] hover:text-[#1F1F1F]"
-          >
-            To apply
-          </button>
-        </form>
+        <Formik
+          initialValues={{
+            title: filter.title || "",
+            author: filter.author || "",
+          }}
+          validationSchema={recommendedFilterSchema}
+          onSubmit={handleFilterSubmit}
+          enableReinitialize={true}
+        >
+          {({ errors, touched }) => (
+            <Form>
+              <p className="ml-4 text-[14px] font-medium text-[#F9F9F9]">
+                Filters:
+              </p>
+              <div className="flex flex-1/3 flex-col gap-2 mt-2">
+                <div className="relative">
+                  <label
+                    htmlFor="title"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#E3E3E3]/50 pointer-events-none"
+                  >
+                    Book title:
+                  </label>
+                  <Field
+                    type="text"
+                    name="title"
+                    id="title"
+                    placeholder="Enter text"
+                    className={`pl-[85px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] hover:border-[#F9F9F9]/10 focus:outline-none ${
+                      errors.author && touched.author ? "border-red-500" : ""
+                    }`}
+                  />
+                </div>
+                <ErrorMessage
+                  name="title"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+
+                <div className="relative">
+                  <label
+                    htmlFor="author"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#E3E3E3]/50 pointer-events-none"
+                  >
+                    The author:
+                  </label>
+                  <Field
+                    type="text"
+                    name="author"
+                    id="author"
+                    placeholder="Enter text"
+                    className={`pl-[95px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] hover:border-[#F9F9F9]/10 focus:outline-none ${
+                      errors.author && touched.author ? "border-red-500" : ""
+                    }`}
+                  />
+                </div>
+                <ErrorMessage
+                  name="author"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-[122px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer hover:bg-[#F9F9F9] hover:text-[#1F1F1F]"
+              >
+                To apply
+              </button>
+            </Form>
+          )}
+        </Formik>
 
         {/* Workout */}
         <div className="w-[313px] border border-transparent rounded-xl bg-[#262626] p-5 mt-5">
@@ -171,7 +214,7 @@ const Recommended = () => {
                 height="20"
                 className="cursor-pointer items-center justify-center flex text-center"
               >
-                <use href="/chevron-left.svg" />
+                <use href="/sprite.svg#icon-chevron-left" />
               </svg>
             </button>
             <button
@@ -186,7 +229,7 @@ const Recommended = () => {
                 height="20"
                 className="cursor-pointer items-center justify-center flex text-center"
               >
-                <use href="/chevron-right.svg" />
+                <use href="/sprite.svg#icon-chevron-right" />
               </svg>
             </button>
           </div>

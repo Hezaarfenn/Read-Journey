@@ -1,5 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import {
+  getStoredToken,
+  setStoredToken,
+  clearStoredAuth,
+} from "../../utils/authUtils";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.baseURL = BASE_URL;
@@ -11,6 +16,49 @@ const setAuthHeader = (token) => {
     delete axios.defaults.headers.common["Authorization"];
   }
 };
+
+// Axios interceptor for automatic token refresh
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const storedToken = getStoredToken();
+        if (!storedToken) {
+          throw new Error("No token available");
+        }
+
+        const response = await axios.post(
+          "/users/refresh",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          },
+        );
+
+        const newToken = response.data.token;
+
+        setStoredToken(newToken);
+        setAuthHeader(newToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return axios(originalRequest);
+      } catch (refreshError) {
+        clearStoredAuth();
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 // Register
 export const registerUser = createAsyncThunk(
@@ -58,21 +106,18 @@ export const loginUser = createAsyncThunk(
 // Logout
 export const logoutUser = createAsyncThunk(
   "auth/signout",
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { getState }) => {
     const token = getState().auth.token;
-    if (!token) {
-      return rejectWithValue("No token found");
-    }
 
     try {
-      setAuthHeader(token);
-      await axios.post("/users/signout");
+      if (token) {
+        setAuthHeader(token);
+        await axios.post("/users/signout");
+      }
       setAuthHeader(null);
     } catch (error) {
-      return rejectWithValue({
-        code: error.code,
-        message: error.message,
-      });
+      // Logout endpoint'i başarısız olsa bile local state'i temizle
+      console.warn("Logout endpoint failed, but clearing local state:", error);
     }
   },
 );
@@ -105,7 +150,7 @@ export const refreshToken = createAsyncThunk(
   "auth/refresh",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/users/current/refresh");
+      const response = await axios.post("/users/refresh");
       return response.data;
     } catch (error) {
       return rejectWithValue({
