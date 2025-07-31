@@ -69,6 +69,15 @@ const booksSlice = createSlice({
       state.error = null;
     },
 
+    clearBooksOnAuthFailure: (state) => {
+      state.recommended = [];
+      state.bookDetails = null;
+      state.currentSession = null;
+      state.currentBookId = null;
+      state.isRecording = false;
+      state.error = null;
+    },
+
     setCurrentSession: (state, action) => {
       state.currentSession = action.payload;
     },
@@ -216,7 +225,24 @@ const booksSlice = createSlice({
       })
       .addCase(fetchOwnBooks.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.ownBooks = action.payload.results;
+        const backendBooks = action.payload.results || [];
+        const localBooks = state.ownBooks || [];
+
+        const combinedBooks = [...backendBooks];
+
+        localBooks.forEach((localBook) => {
+          const existsInBackend = backendBooks.some(
+            (backendBook) =>
+              backendBook._id === localBook._id ||
+              backendBook.title === localBook.title,
+          );
+
+          if (!existsInBackend) {
+            combinedBooks.push(localBook);
+          }
+        });
+
+        state.ownBooks = combinedBooks;
         state.error = null;
       })
       .addCase(fetchOwnBooks.rejected, (state, action) => {
@@ -281,6 +307,7 @@ export const {
   initializeReading,
   clearBooksError,
   clearBooksData,
+  clearBooksOnAuthFailure,
 } = booksSlice.actions;
 
 export default booksSlice.reducer;

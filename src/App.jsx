@@ -4,6 +4,7 @@ import { AppRoutes } from "./routers/AppRoutes";
 import { ToastContainer } from "react-toastify";
 import { clearAuth } from "./redux/auth/authSlice";
 import { fetchCurrentUser } from "./redux/auth/authOps";
+import { fetchOwnBooks } from "./redux/books/booksOps";
 import { getStoredToken } from "./utils/authUtils";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,6 +19,16 @@ function App() {
       dispatch(fetchCurrentUser());
     }
   }, [dispatch, token, isLoggedIn, isRefreshing]);
+
+  useEffect(() => {
+    if (isLoggedIn && token) {
+      const timer = setTimeout(() => {
+        dispatch(fetchOwnBooks());
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [dispatch, isLoggedIn, token]);
 
   useEffect(() => {
     const checkAuthOnLoad = () => {

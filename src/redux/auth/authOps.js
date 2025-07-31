@@ -1,10 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import {
-  getStoredToken,
-  setStoredToken,
-  clearStoredAuth,
-} from "../../utils/authUtils";
+import { getStoredToken, setStoredToken } from "../../utils/authUtils";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.baseURL = BASE_URL;
@@ -50,7 +46,7 @@ axios.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axios(originalRequest);
       } catch (refreshError) {
-        clearStoredAuth();
+        localStorage.removeItem("persist:auth");
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
@@ -116,7 +112,6 @@ export const logoutUser = createAsyncThunk(
       }
       setAuthHeader(null);
     } catch (error) {
-      // Logout endpoint'i başarısız olsa bile local state'i temizle
       console.warn("Logout endpoint failed, but clearing local state:", error);
     }
   },
