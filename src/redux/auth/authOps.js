@@ -9,7 +9,7 @@ import {
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.baseURL = BASE_URL;
 
-const setAuthHeader = (token) => {
+export const setAuthHeader = (token) => {
   if (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {

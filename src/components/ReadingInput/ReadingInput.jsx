@@ -188,7 +188,7 @@ const ReadingInput = () => {
                   </label>
                   <Field
                     name="page"
-                    type="text"
+                    type="number"
                     id="page"
                     placeholder="0"
                     className="pl-[115px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] hover:border-[#F9F9F9]/10 focus:outline-none"
@@ -237,7 +237,7 @@ const ReadingInput = () => {
                 </label>
                 <Field
                   name="page"
-                  type="text"
+                  type="number"
                   id="page"
                   placeholder="0"
                   className="pl-[115px] w-[313px] h-[50px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#F9F9F9] hover:border-[#F9F9F9]/10 focus:outline-none"
