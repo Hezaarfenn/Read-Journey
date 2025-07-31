@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../redux/auth/authOps";
@@ -14,14 +14,6 @@ const Header = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state) => state.auth.user);
-
-  const error = useSelector((state) => state.auth.error);
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error.message || "An error occurred");
-    }
-  }, [error]);
 
   const handleLogout = async () => {
     try {
