@@ -67,9 +67,9 @@ const Recommended = () => {
   }
 
   return (
-    <section className="flex gap-4 mt-2">
+    <section className="flex flex-col lg:flex-row gap-4 mt-2">
       {/* Left Sidebar */}
-      <div className="flex flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
+      <div className="flex flex-col md:flex-row lg:flex-col items-center gap-8 border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
         {/* Filter */}
         <Formik
           initialValues={{
@@ -184,7 +184,7 @@ const Recommended = () => {
           </a>
         </div>
 
-        <div className="flex gap-3.5 items-center w-[313px] border border-transparent rounded-xl bg-[#262626] p-5 mt-5">
+        <div className="hidden lg:flex gap-3.5 items-center w-[313px] border border-transparent rounded-xl bg-[#262626] p-5 mt-5">
           <img src="/img/book.png" alt="Book" className="w-10 h-10" />
           <p className="text-[#686868] text-[14px] font-medium">
             "Books are <span className="text-[#F9F9F9]">windows</span> to the
