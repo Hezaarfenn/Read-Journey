@@ -52,15 +52,16 @@ const LoginPage = () => {
   };
 
   return (
-    <section className="flex gap-4">
-      <div className="flex-1/2 py-8 px-16 border rounded-[30px] border-transparent bg-[#1F1F1F] flex flex-col">
+    <section className="flex flex-col lg:flex-row gap-4">
+      <div className="w-full lg:w-1/2 py-8 px-16 border rounded-[30px] border-transparent bg-[#1F1F1F] flex flex-col">
         <div className="flex items-center gap-1">
           <svg width="42" height="17" className="">
             <use href="/sprite.svg#icon-Frame-8" />
           </svg>
           <p className="text-lg font-bold">READ JOURNEY</p>
         </div>
-        <p className="mt-[107px] text-[64px]/[60px] tracking-[0.02em] font-bold ">
+
+        <p className="w-full mt-8 sm:mt-[107px] text-3xl sm:text-5xl lg:text-[64px]/[60px] leading-tight sm:leading-[60px] tracking-[0.02em] font-bold ">
           Expand your mind, reading{" "}
           <span className="text-[#E3E3E3]/50">a book</span>
         </p>
@@ -156,11 +157,11 @@ const LoginPage = () => {
               )}
 
               {/* Button and Link */}
-              <div className="flex items-center mt-40 gap-5">
+              <div className="flex flex-col sm:flex-row items-center mt-8 sm:mt-40 gap-3 sm:gap-5">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-[225px] h-[52px] border hover:border-[#F9F9F9]/20 hover:bg-transparent hover:text-[#F9F9F9] rounded-[30px] bg-[#F9F9F9] text-[#1F1F1F] text-xl/tight font-bold tracking-[0.02em] cursor-pointer"
+                  className="w-full sm:w-[225px] h-[52px] border hover:border-[#F9F9F9]/20 hover:bg-transparent hover:text-[#F9F9F9] rounded-[30px] bg-[#F9F9F9] text-[#1F1F1F] text-xl/tight font-bold tracking-[0.02em] cursor-pointer"
                 >
                   Login
                 </button>
@@ -176,7 +177,7 @@ const LoginPage = () => {
         </Formik>
       </div>
 
-      <div className="flex-1/2 px-16 border rounded-[30px] border-transparent bg-[#1F1F1F] hidden md:flex flex-col items-center">
+      <div className="flex md:hidden lg:flex w-full lg:w-1/2 px-4 lg:px-16 border rounded-[30px] border-transparent bg-[#1F1F1F] flex-col items-center">
         <img
           src="/img/iPhone 15 Black.png"
           alt="iPhone15"
