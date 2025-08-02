@@ -58,7 +58,7 @@ const LoginPage = () => {
           <svg width="42" height="17" className="">
             <use href="/sprite.svg#icon-Frame-8" />
           </svg>
-          <p className="text-lg font-bold">READ JOURNEY</p>
+          <p className="hidden md:flex text-lg font-bold">READ JOURNEY</p>
         </div>
 
         <p className="w-full mt-8 sm:mt-[107px] text-3xl sm:text-5xl lg:text-[64px]/[60px] leading-tight sm:leading-[60px] tracking-[0.02em] font-bold ">
@@ -181,7 +181,7 @@ const LoginPage = () => {
         <img
           src="/img/iPhone 15 Black.png"
           alt="iPhone15"
-          className="mt-20 w-[400px] max-w-none"
+          className="mt-20 w-[255px] lg:w-[400px] max-w-none"
         />
       </div>
     </section>

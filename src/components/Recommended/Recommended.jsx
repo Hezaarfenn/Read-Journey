@@ -24,17 +24,31 @@ const Recommended = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [addLibraryModalOpen, setAddLibraryModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
+    const limit = isMobile ? 2 : 10;
     dispatch(
       fetchRecommendedBooks({
         page: currentPage,
-        limit: 10,
+        limit: limit,
         title: filter.title,
         author: filter.author,
       }),
     );
-  }, [dispatch, currentPage, filter.title, filter.author]);
+  }, [dispatch, currentPage, filter.title, filter.author, isMobile]);
 
   useEffect(() => {
     if (error) {
@@ -239,20 +253,24 @@ const Recommended = () => {
           Page {pagination.page} of {pagination.totalPages}
         </div>
 
-        <ul className="flex flex-wrap gap-5 mt-7">
+        <ul
+          className={`flex ${isMobile ? "flex-row gap-4 overflow-x-auto" : "flex-wrap gap-5"} mt-7`}
+        >
           {books.length > 0 ? (
             books.map((book) => (
               <li
                 key={book._id}
                 onClick={() => setSelectedBook(book)}
-                className="flex flex-col gap-3 items-start cursor-pointer"
+                className={`flex ${isMobile ? "flex-col gap-3 items-start min-w-[120px]" : "flex-col gap-3 items-start"} cursor-pointer`}
               >
                 <img
                   src={book.imageUrl}
                   alt={book.title}
-                  className="w-[137px] h-[208px] rounded-lg transition-transform duration-300 hover:scale-105"
+                  className={`${isMobile ? "w-[120px] h-[180px]" : "w-[137px] h-[208px]"} rounded-lg transition-transform duration-300 hover:scale-105`}
                 />
-                <div className="w-[137px] flex justify-between items-center">
+                <div
+                  className={`${isMobile ? "w-[120px]" : "w-[137px]"} flex justify-between items-center`}
+                >
                   <div className="flex flex-col gap-0.5">
                     <p className="text-[#E3E3E3] font-bold text-[14px]">
                       {book.title}
@@ -268,6 +286,21 @@ const Recommended = () => {
             <p className="text-[#686868] text-sm">No books found.</p>
           )}
         </ul>
+
+        {/* Mobile Pagination Dots */}
+        {isMobile && books.length > 0 && (
+          <div className="flex justify-center gap-2 mt-6">
+            {Array.from({ length: pagination.totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`w-2 h-2 rounded-full ${
+                  currentPage === index + 1 ? "bg-[#F9F9F9]" : "bg-[#686868]"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Modal */}
