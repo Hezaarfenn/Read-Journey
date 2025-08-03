@@ -95,9 +95,9 @@ const MyLibrary = () => {
   };
 
   return (
-    <section className="flex gap-4 mt-2">
+    <section className="flex flex-col lg:flex-row gap-4 mt-2">
       {/* Left Sidebar */}
-      <div className="flex flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
+      <div className="gap-7 md:gap-14 lg:gap-20 items-center md:justify-center flex flex-col md:flex-row lg:flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
         {/* Create your library */}
         <div>
           <p className="ml-4 text-[14px] font-medium text-[#F9F9F9]">
@@ -199,7 +199,7 @@ const MyLibrary = () => {
         </div>
 
         {/* Recommended books */}
-        <div className="w-[313px] border border-transparent rounded-xl bg-[#262626] p-5 mt-[78px]">
+        <div className="w-[313px] border border-transparent rounded-xl bg-[#262626] p-5">
           <h2 className="text-xl font-bold">Recommended books</h2>
 
           <ul className="w-full flex gap-5 mt-5">
