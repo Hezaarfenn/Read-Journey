@@ -146,7 +146,7 @@ const ReadingInput = () => {
   if (isBookCompleted) {
     return (
       <div className="flex flex-col mb-10">
-        <div className="">
+        <div>
           <svg className="w-16 h-16 mx-auto text-green-500">
             <use href="/sprite.svg#icon-check-circle" />
           </svg>
