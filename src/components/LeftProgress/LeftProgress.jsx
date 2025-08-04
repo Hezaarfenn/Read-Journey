@@ -13,7 +13,7 @@ const LeftProgress = () => {
   }, [dispatch, id]);
 
   return (
-    <div className="flex flex-col md:flex-row lg:flex-col gap-0 md:gap-10 lg:gap-0 md:h-[336px] border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
+    <div className="flex flex-col md:flex-row lg:flex-col gap-0 md:gap-10 lg:gap-0 md:h-[336px] lg:h-full border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
       {/* Start Reading */}
       <ReadingInput />
 
