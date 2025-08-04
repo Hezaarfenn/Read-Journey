@@ -24,22 +24,39 @@ const Recommended = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [addLibraryModalOpen, setAddLibraryModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isMobile, setIsMobile] = useState(false);
+  const [deviceType, setDeviceType] = useState("desktop");
 
-  // Mobile detection
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setDeviceType("mobile");
+      } else if (width < 1024) {
+        setDeviceType("tablet");
+      } else {
+        setDeviceType("desktop");
+      }
     };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
 
-    return () => window.removeEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkDevice);
   }, []);
 
   useEffect(() => {
-    const limit = isMobile ? 2 : 10;
+    let limit;
+    switch (deviceType) {
+      case "mobile":
+        limit = 2;
+        break;
+      case "tablet":
+        limit = 8;
+        break;
+      default:
+        limit = 10;
+    }
+
     dispatch(
       fetchRecommendedBooks({
         page: currentPage,
@@ -48,13 +65,19 @@ const Recommended = () => {
         author: filter.author,
       }),
     );
-  }, [dispatch, currentPage, filter.title, filter.author, isMobile]);
+  }, [dispatch, currentPage, filter.title, filter.author, deviceType]);
 
   useEffect(() => {
     if (error) {
       toast.error(error);
     }
   }, [error]);
+
+  // Utility function to truncate text
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
 
   const isAlreadyInLibrary = useSelector((state) =>
     state.books.ownBooks.some((b) => b.title === selectedBook?.title),
@@ -76,6 +99,8 @@ const Recommended = () => {
     }, 1000);
   };
 
+  const isMobile = deviceType === "mobile";
+
   if (isLoading) {
     return <Loader />;
   }
@@ -83,7 +108,7 @@ const Recommended = () => {
   return (
     <section className="flex flex-col lg:flex-row gap-4 mt-2">
       {/* Left Sidebar */}
-      <div className="flex flex-col md:flex-row lg:flex-col items-center gap-8 border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
+      <div className="flex flex-col md:flex-row lg:flex-col gap-8 border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
         {/* Filter */}
         <Formik
           initialValues={{
@@ -273,10 +298,10 @@ const Recommended = () => {
                 >
                   <div className="flex flex-col gap-0.5">
                     <p className="text-[#E3E3E3] font-bold text-[14px]">
-                      {book.title}
+                      {truncateText(book.title, 15)}
                     </p>
                     <p className="text-[#686868] font-medium text-[10px]">
-                      {book.author}
+                      {truncateText(book.author, 12)}
                     </p>
                   </div>
                 </div>

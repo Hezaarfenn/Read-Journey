@@ -97,7 +97,7 @@ const MyLibrary = () => {
   return (
     <section className="flex flex-col lg:flex-row gap-4 mt-2">
       {/* Left Sidebar */}
-      <div className="gap-7 md:gap-14 lg:gap-20 items-center md:justify-center flex flex-col md:flex-row lg:flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
+      <div className="gap-7 md:gap-14 lg:gap-20 md:justify-center flex flex-col md:flex-row lg:flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] py-10 px-5">
         {/* Create your library */}
         <div>
           <p className="ml-4 text-[14px] font-medium text-[#F9F9F9]">
@@ -235,10 +235,12 @@ const MyLibrary = () => {
       {/* Main Content */}
       <div className="flex flex-1 flex-col gap-2 border rounded-[30px] border-transparent bg-[#1F1F1F] p-10">
         <div className="flex justify-between items-center mb-5">
-          <h1 className="text-[28px]/[32px] font-bold">My library</h1>
+          <h1 className="text-[20px] md:text-[28px]/[32px] font-bold">
+            My library
+          </h1>
 
           <select
-            className="w-[153px] h-[46px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-sm font-medium placeholder:text-[#686868]"
+            className="w-[153px] h-[46px] border rounded-xl border-transparent bg-[#262626] p-3.5 text-[#F9F9F9] text-xs lg:text-sm font-medium placeholder:text-[#686868]"
             value={selectedFilter}
             onChange={(e) => setSelectedFilter(e.target.value)}
           >
@@ -250,10 +252,14 @@ const MyLibrary = () => {
         </div>
 
         {filteredBooks.length === 0 ? (
-          <div className="w-full flex flex-col justify-center items-center mt-[147px]">
+          <div className="w-full flex flex-col justify-center items-center mt-[63px] md:mt-[86px] lg:mt-[147px] mb-[100px] md:mb-[160px]">
             <div className="w-[274px] gap-5 flex flex-col items-center">
-              <img src="/img/book-1.png" alt="Book" className="w-40 h-40" />
-              <p className="text-[#F9F9F9] text-[14px]/[18px] font-medium text-center">
+              <img
+                src="/img/book-1.png"
+                alt="Book"
+                className="w-[100px] md:w-[130px] h-[100px] md:h-[130px]"
+              />
+              <p className="w-[197px] md:w-[274px] text-[#F9F9F9] text-[14px]/[18px] font-medium text-center">
                 To start training, add{" "}
                 <span className="text-[#686868]">some of your books</span> or
                 from the recommended ones

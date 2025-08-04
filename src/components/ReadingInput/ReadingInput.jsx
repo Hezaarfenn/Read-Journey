@@ -145,20 +145,16 @@ const ReadingInput = () => {
 
   if (isBookCompleted) {
     return (
-      <div className="flex flex-col items-center justify-center py-8">
-        <div className="text-center">
-          <div className="mb-4">
-            <svg className="w-16 h-16 mx-auto text-green-500">
-              <use href="/sprite.svg#icon-check-circle" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-bold text-[#F9F9F9] mb-2">
-            Congratulations! 🎉
-          </h3>
-          <p className="text-sm text-[#686868]">
-            You have completed this book!
-          </p>
+      <div className="flex flex-col mb-10">
+        <div className="">
+          <svg className="w-16 h-16 mx-auto text-green-500">
+            <use href="/sprite.svg#icon-check-circle" />
+          </svg>
         </div>
+        <h3 className="text-xl font-bold text-[#F9F9F9] mb-2">
+          Congratulations! 🎉
+        </h3>
+        <p className="text-sm text-[#686868]">You have completed this book!</p>
       </div>
     );
   }
@@ -203,7 +199,7 @@ const ReadingInput = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="mb-8 w-[114px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
+                  className="mb-8 w-[91px] md:w-[114px] h-[38px] md:h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-sm md:text-[16px] font-bold mt-5 cursor-pointer"
                 >
                   To start
                 </button>
@@ -252,7 +248,7 @@ const ReadingInput = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-[114px] h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-[16px] font-bold mt-5 cursor-pointer"
+                className="mb-8 w-[91px] md:w-[114px] h-[38px] md:h-[42px] border rounded-[30px] border-[#F9F9F9]/20 text-[#F9F9F9] text-sm md:text-[16px] font-bold mt-5 cursor-pointer"
               >
                 To stop
               </button>

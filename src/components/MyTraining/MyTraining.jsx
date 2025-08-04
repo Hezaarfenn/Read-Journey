@@ -7,7 +7,9 @@ const MyTraining = ({ recActive }) => {
   return (
     <section className="flex flex-1 flex-col border rounded-[30px] border-transparent bg-[#1F1F1F] p-10">
       <div className="flex justify-between items-center mb-5">
-        <h1 className="text-[28px]/[32px] font-bold">My reading</h1>
+        <h1 className="text-[20px] md:text-[28px]/[32px] font-bold">
+          My reading
+        </h1>
       </div>
 
       {book && book.title ? (
@@ -15,11 +17,13 @@ const MyTraining = ({ recActive }) => {
           <img
             src={book.imageUrl}
             alt={book.title}
-            className="w-[224px] h-[340px] object-cover rounded-lg"
+            className="w-[137px] md:w-[169px] lg:w-[224px] h-[208px] md:h-[256px] lg:h-[340px] object-cover rounded-lg"
           />
           <div className="flex flex-col gap-2 items-center text-white">
-            <h2 className="text-xl font-bold">{book.title}</h2>
-            <p className="text-sm text-[#686868] font-medium">{book.author}</p>
+            <h2 className="text-sm md:text-xl font-bold">{book.title}</h2>
+            <p className="text-[10px] md:text-sm text-[#686868] font-medium">
+              {book.author}
+            </p>
             <p className="text-[10px]/[12px] font-medium text-[#F9F9F9]">
               {book.totalPages} pages
             </p>

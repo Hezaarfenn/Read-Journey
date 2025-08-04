@@ -43,7 +43,7 @@ const ReadingPage = () => {
   return (
     <div>
       <Header />
-      <div className="flex gap-4 mt-2">
+      <div className="flex flex-col lg:flex-row gap-4 mt-2">
         {renderLeftContent()}
         <MyTraining />
       </div>
