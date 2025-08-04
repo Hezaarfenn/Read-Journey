@@ -1,12 +1,84 @@
-# React + Vite
+# 📚 Read Journey
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Read Journey**, kullanıcıların kitap okuma alışkanlıklarını dijital ortamda planlayabileceği, kitap günlüğü tutabileceği ve okuma hedeflerine ulaşabileceği modern bir uygulamadır. React + Redux Toolkit altyapısıyla geliştirilmiş olup, REST API ile dinamik olarak çalışır.
 
-Currently, two official plugins are available:
+[![Static Badge](https://img.shields.io/badge/visit-Read%20Journey-%236C63FF?style=for-the-badge)](https://read-journey-peach.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ![alt](/public/img/ReadJourney%20Readme.png)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📌 Özellikler
+
+- 🔐 Kullanıcı kayıt ve giriş sistemi (JWT ile doğrulama)
+- 📚 Kitap listesi görüntüleme (önerilen kitaplar)
+- ➕ Kütüphaneye kitap ekleme / silme
+- ⏳ Okuma başlatma ve ilerleme takibi
+- 📓 Günlük (diary) oluşturma
+- 📊 Okuma istatistiklerini grafikle analiz etme
+- ✅ Responsive ve mobil uyumlu arayüz
+- 📁 Redux Persist ile local storage desteği
+
+---
+
+## 🧩 Kullanılan Teknolojiler
+
+| Teknoloji        | Açıklama                                  |
+|------------------|-------------------------------------------|
+| React            | Bileşen tabanlı kullanıcı arayüzü         |
+| Redux Toolkit    | Global state yönetimi                     |
+| Redux Persist    | Tarayıcıda veri saklama                   |
+| React Router DOM | Sayfa yönlendirme                         |
+| React Hook Form  | Form yönetimi ve doğrulama (Yup ile)      |
+| Axios            | API istekleri                             |
+| Chart.js         | Grafiksel istatistik gösterimi            |
+| Tailwind CSS     | Hızlı ve özelleştirilebilir UI tasarımı   |
+| Formik & YUP     | Form yönetimi ve doğrulama                |
+| Toastify         | Bildirim sistemi                          |
+| Vite             | Geliştirme ortamı                         |
+| REST API         | Backend bağlantısı (Swagger tabanlı)      |
+
+---
+
+## 🧭 Sayfa Yapısı
+
+| Sayfa           | Rota           | Açıklama                            |
+|-----------------|----------------|-------------------------------------|
+| Giriş           | `/login`       | Kullanıcı girişi                    |
+| Kayıt           | `/register`    | Yeni kullanıcı oluşturma            |
+| Önerilen Kitaplar | `/recommended` | Kullanıcıya özel öneri listesi      |
+| Kütüphane       | `/library`     | Kullanıcının kişisel kitaplığı      |
+| Okuma Sayfası   | `/reading`     | Okuma hedefi ve ilerleme takibi     |
+
+---
+
+## 🔐 API ve Yetkilendirme
+
+- Kimlik doğrulama: JWT Token ile
+- API dokümantasyonu: [Swagger](https://readjourney.b.goit.study/api-docs/)
+- Tüm istekler Axios ile yapılır.
+
+---
+
+## 👤 Geliştirici
+
+### 👩‍💻 Heza Gölcük
+
+<p align="left">
+  <a href="https://github.com/Hezaarfenn" target="_blank">
+    <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Badge"/>
+  </a>
+  <a href="https://www.linkedin.com/in/heza-g%C3%B6lc%C3%BCk-8a2279312/" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Badge"/>
+  </a>
+</p>
+
+---
+
+📝 Lisans
+
+Bu proje eğitim amaçlıdır ve açık kaynak değildir.
+
+---
+
+⭐️ “Her kitap bir yolculuktur; Read Journey ile yolun hep açık olsun.” 📖
