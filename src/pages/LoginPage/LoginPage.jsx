@@ -53,7 +53,7 @@ const LoginPage = () => {
 
   return (
     <section className="flex flex-col lg:flex-row gap-4">
-      <div className="w-full lg:w-1/2 py-8 px-16 border rounded-[30px] border-transparent bg-[#1F1F1F] flex flex-col">
+      <div className="w-full lg:w-1/2 p-5 md:py-8 md:px-16 border rounded-[30px] border-transparent bg-[#1F1F1F] flex flex-col">
         <div className="flex items-center gap-1">
           <svg width="42" height="17" className="">
             <use href="/sprite.svg#icon-Frame-8" />
@@ -61,7 +61,7 @@ const LoginPage = () => {
           <p className="hidden md:flex text-lg font-bold">READ JOURNEY</p>
         </div>
 
-        <p className="w-full mt-8 sm:mt-[107px] text-3xl sm:text-5xl lg:text-[64px]/[60px] leading-tight sm:leading-[60px] tracking-[0.02em] font-bold ">
+        <p className="w-[295px] md:w-[444px] lg:w-full mt-8 sm:mt-[107px] text-3xl sm:text-5xl lg:text-[64px]/[60px] leading-tight sm:leading-[60px] tracking-[0.02em] font-bold ">
           Expand your mind, reading{" "}
           <span className="text-[#E3E3E3]/50">a book</span>
         </p>
@@ -72,7 +72,7 @@ const LoginPage = () => {
           onSubmit={handleLoginSubmit}
         >
           {({ errors, touched }) => (
-            <Form>
+            <Form className="flex flex-col w-[295px] md:w-[472px] lg:w-full">
               {/* Email */}
               <div className="relative mt-10">
                 <label
@@ -157,13 +157,13 @@ const LoginPage = () => {
               )}
 
               {/* Button and Link */}
-              <div className="flex flex-col sm:flex-row items-center mt-8 sm:mt-40 gap-3 sm:gap-5">
+              <div className="flex lg:flex-col items-center mt-5 md:mt-[146px] gap-3 sm:gap-5">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full sm:w-[225px] h-[52px] border hover:border-[#F9F9F9]/20 hover:bg-transparent hover:text-[#F9F9F9] rounded-[30px] bg-[#F9F9F9] text-[#1F1F1F] text-xl/tight font-bold tracking-[0.02em] cursor-pointer"
+                  className="w-[131px] lg:w-full sm:w-[225px] h-[52px] border hover:border-[#F9F9F9]/20 hover:bg-transparent hover:text-[#F9F9F9] rounded-[30px] bg-[#F9F9F9] text-[#1F1F1F] text-[14px] md:text-xl/tight font-bold tracking-[0.02em] cursor-pointer"
                 >
-                  Login
+                  Log in
                 </button>
                 <a
                   href="/register"
@@ -181,7 +181,7 @@ const LoginPage = () => {
         <img
           src="/img/iPhone 15 Black.png"
           alt="iPhone15"
-          className="mt-20 w-[255px] lg:w-[400px] max-w-none"
+          className="mt-5 lg:mt-20 w-[255px] lg:w-[400px] max-w-none"
         />
       </div>
     </section>
